@@ -1173,6 +1173,90 @@ html, body {
   transform: translateY(-2px);
 }
 
+/* =========================================
+   FLOATING BOTANICAL BREEZE SOUND TOGGLE
+   ========================================= */
+.sound-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.6rem;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green-800);
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 65%, var(--green-100));
+  border: 1.5px solid var(--green-500);
+  border-radius: 38px 4px 38px 4px;
+  padding: 0.68rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sound-toggle:hover {
+  background-color: var(--green-300);
+  border-color: var(--green-800);
+  color: var(--green-950);
+  transform: translateY(-2px) rotate(-1.5deg);
+}
+
+.sound-toggle.is-playing {
+  background-color: var(--green-800);
+  color: var(--green-100);
+  border-color: var(--green-800);
+}
+
+.sound-toggle.is-playing:hover {
+  background-color: var(--green-950);
+  border-color: var(--green-950);
+  color: var(--green-100);
+}
+
+.sound-icon {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.sound-label {
+  position: relative;
+  z-index: 1;
+}
+
+.sound-toggle .breeze-wave {
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.sound-toggle.is-playing .wave-1 {
+  animation: breezeWavePulse 2.4s ease-in-out infinite;
+}
+
+.sound-toggle.is-playing .wave-2 {
+  animation: breezeWavePulse 2.4s ease-in-out 0.4s infinite;
+}
+
+.sound-toggle.is-playing .wave-3 {
+  animation: breezeWavePulse 2.4s ease-in-out 0.8s infinite;
+}
+
+@keyframes breezeWavePulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(1.5px);
+  }
+}
+
 /* Responsive adjustment for smaller screens */
 @media (max-width: 860px) {
   .about-grid,

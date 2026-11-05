@@ -421,6 +421,7 @@
           // Sit on the branch for a random duration (5.5s to 11.5s at 60fps)
           this.perchTimer = 330 + Math.floor(Math.random() * 360);
           rustleBranchLeaves(this.x, this.y, this.targetSide);
+          triggerPerchedBirdChirp(this.targetSide);
         }
         return;
       }
@@ -649,6 +650,288 @@
   // Two independent songbirds that fly in, sit on random branches, and fly away
   const birds = [new VisitingBird(0), new VisitingBird(1)];
 
+  // =========================================================
+  // SOOTHING NATURAL BREEZE & FOREST AMBIENCE (WEB AUDIO API)
+  // =========================================================
+  const soundToggleBtn = document.getElementById('sound-toggle');
+  const soundLabelEl = soundToggleBtn ? soundToggleBtn.querySelector('.sound-label') : null;
+
+  const natureAudio = {
+    ctx: null,
+    isPlaying: false,
+    userMuted: false,
+    masterGain: null,
+    warmBreezeFilter: null,
+    warmBreezeGain: null,
+    canopyFilter: null,
+    canopyGain: null,
+    canopyPanner: null,
+    chirpTimer: 260,
+  };
+
+  function initNatureAudio() {
+    if (natureAudio.ctx) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+
+    const actx = new AudioCtx();
+    natureAudio.ctx = actx;
+
+    const masterGain = actx.createGain();
+    masterGain.gain.setValueAtTime(0.0001, actx.currentTime);
+    masterGain.connect(actx.destination);
+    natureAudio.masterGain = masterGain;
+
+    // Generate a 6-second seamless brown/pink organic noise buffer (warm 1/f^2 roll-off, zero harsh static)
+    const sampleRate = actx.sampleRate;
+    const bufferLength = sampleRate * 6;
+    const noiseBuffer = actx.createBuffer(2, bufferLength, sampleRate);
+
+    for (let ch = 0; ch < 2; ch++) {
+      const output = noiseBuffer.getChannelData(ch);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      let lastOut = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const white = Math.random() * 2 - 1;
+        // Paul Kellet's pink noise filter blended with warm brownian integration
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+        b6 = white * 0.115926;
+
+        // Smooth brownian low-frequency warmth
+        lastOut = (lastOut + 0.025 * white) / 1.025;
+        let sample = pink * 0.55 + lastOut * 0.95;
+
+        // Cross-fade loop ends so the 6-second buffer loops with zero seam
+        const fadeSamples = sampleRate * 0.4;
+        if (i < fadeSamples) {
+          sample *= i / fadeSamples;
+        } else if (i > bufferLength - fadeSamples) {
+          sample *= (bufferLength - i) / fadeSamples;
+        }
+        output[i] = sample;
+      }
+    }
+
+    // Layer 1: Deep, Warm Meadow Breeze Swell (Low-pass sculpted air movement)
+    const breezeSource = actx.createBufferSource();
+    breezeSource.buffer = noiseBuffer;
+    breezeSource.loop = true;
+
+    const warmBreezeFilter = actx.createBiquadFilter();
+    warmBreezeFilter.type = 'lowpass';
+    warmBreezeFilter.frequency.setValueAtTime(165, actx.currentTime);
+    warmBreezeFilter.Q.setValueAtTime(0.7, actx.currentTime);
+
+    const warmBreezeSoftener = actx.createBiquadFilter();
+    warmBreezeSoftener.type = 'lowpass';
+    warmBreezeSoftener.frequency.setValueAtTime(310, actx.currentTime);
+
+    const warmBreezeGain = actx.createGain();
+    warmBreezeGain.gain.setValueAtTime(0.28, actx.currentTime);
+
+    breezeSource.connect(warmBreezeFilter);
+    warmBreezeFilter.connect(warmBreezeSoftener);
+    warmBreezeSoftener.connect(warmBreezeGain);
+    warmBreezeGain.connect(masterGain);
+    breezeSource.start(0);
+
+    natureAudio.warmBreezeFilter = warmBreezeFilter;
+    natureAudio.warmBreezeGain = warmBreezeGain;
+
+    // Layer 2: Soft Leaf Canopy Whisper (Gentle band-pass rustle through tree leaves)
+    const canopySource = actx.createBufferSource();
+    canopySource.buffer = noiseBuffer;
+    canopySource.loop = true;
+    canopySource.playbackRate.setValueAtTime(0.88, actx.currentTime);
+
+    const canopyFilter = actx.createBiquadFilter();
+    canopyFilter.type = 'bandpass';
+    canopyFilter.frequency.setValueAtTime(420, actx.currentTime);
+    canopyFilter.Q.setValueAtTime(1.15, actx.currentTime);
+
+    const canopyHighCut = actx.createBiquadFilter();
+    canopyHighCut.type = 'lowpass';
+    canopyHighCut.frequency.setValueAtTime(780, actx.currentTime);
+
+    const canopyGain = actx.createGain();
+    canopyGain.gain.setValueAtTime(0.11, actx.currentTime);
+
+    breezeSource; // keep reference
+    if (actx.createStereoPanner) {
+      const panner = actx.createStereoPanner();
+      canopySource.connect(canopyFilter);
+      canopyFilter.connect(canopyHighCut);
+      canopyHighCut.connect(panner);
+      panner.connect(canopyGain);
+      natureAudio.canopyPanner = panner;
+    } else {
+      canopySource.connect(canopyFilter);
+      canopyFilter.connect(canopyHighCut);
+      canopyHighCut.connect(canopyGain);
+    }
+    canopyGain.connect(masterGain);
+    canopySource.start(1.7);
+
+    natureAudio.canopyFilter = canopyFilter;
+    natureAudio.canopyGain = canopyGain;
+  }
+
+  // Soft distant songbird notes in the canopy
+  function triggerPerchedBirdChirp(side) {
+    if (!natureAudio.isPlaying || !natureAudio.ctx || !natureAudio.masterGain) return;
+    const actx = natureAudio.ctx;
+    if (actx.state !== 'running') return;
+
+    const now = actx.currentTime;
+    // Gentle pentatonic woodland frequencies (mellow, flute-like)
+    const phrases = [
+      [1318.5, 1567.98],
+      [1174.66, 1479.98, 1318.5],
+      [1567.98, 1318.5],
+      [1046.5, 1318.5, 1567.98],
+    ];
+    const notes = phrases[Math.floor(Math.random() * phrases.length)];
+
+    const filter = actx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1950, now);
+
+    let outputNode = filter;
+    if (actx.createStereoPanner) {
+      const panner = actx.createStereoPanner();
+      const panVal = side === 'left' ? -0.45 : side === 'right' ? 0.45 : (Math.random() - 0.5) * 0.6;
+      panner.pan.setValueAtTime(panVal, now);
+      filter.connect(panner);
+      outputNode = panner;
+    }
+    outputNode.connect(natureAudio.masterGain);
+
+    notes.forEach((freq, idx) => {
+      const start = now + idx * 0.19 + Math.random() * 0.03;
+      const dur = 0.15 + Math.random() * 0.05;
+
+      const osc = actx.createOscillator();
+      const noteGain = actx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq * 0.96, start);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.03, start + dur * 0.55);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.99, start + dur);
+
+      noteGain.gain.setValueAtTime(0.0001, start);
+      noteGain.gain.linearRampToValueAtTime(0.014, start + dur * 0.28);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      osc.connect(noteGain);
+      noteGain.connect(filter);
+
+      osc.start(start);
+      osc.stop(start + dur + 0.02);
+    });
+  }
+
+  function updateNatureAudio() {
+    if (!natureAudio.isPlaying || !natureAudio.ctx) return;
+    const actx = natureAudio.ctx;
+    if (actx.state !== 'running') return;
+
+    const now = actx.currentTime;
+    const windStrength = Math.min(1.6, Math.abs(wind.current));
+
+    // Modulate warm breeze cutoff & volume smoothly with live wind gusts
+    if (natureAudio.warmBreezeFilter && natureAudio.warmBreezeGain) {
+      const targetBreezeFreq = 135 + windStrength * 95 + Math.sin(wind.time * 0.7) * 18;
+      const targetBreezeGain = 0.22 + windStrength * 0.14;
+      natureAudio.warmBreezeFilter.frequency.setTargetAtTime(targetBreezeFreq, now, 0.25);
+      natureAudio.warmBreezeGain.gain.setTargetAtTime(targetBreezeGain, now, 0.25);
+    }
+
+    // Modulate soft leaf canopy rustle & stereo drift with wind direction
+    if (natureAudio.canopyFilter && natureAudio.canopyGain) {
+      const targetCanopyFreq = 360 + windStrength * 190 + Math.cos(wind.time * 0.5) * 35;
+      const targetCanopyGain = 0.07 + windStrength * 0.085;
+      natureAudio.canopyFilter.frequency.setTargetAtTime(targetCanopyFreq, now, 0.2);
+      natureAudio.canopyGain.gain.setTargetAtTime(targetCanopyGain, now, 0.2);
+    }
+
+    if (natureAudio.canopyPanner) {
+      const panTarget = Math.max(-0.55, Math.min(0.55, wind.current * 0.35));
+      natureAudio.canopyPanner.pan.setTargetAtTime(panTarget, now, 0.4);
+    }
+
+    // Occasional distant woodland bird call every ~9-15 seconds
+    natureAudio.chirpTimer--;
+    if (natureAudio.chirpTimer <= 0) {
+      natureAudio.chirpTimer = 540 + Math.floor(Math.random() * 380);
+      triggerPerchedBirdChirp(Math.random() < 0.5 ? 'left' : 'right');
+    }
+  }
+
+  function setNatureSoundState(enable) {
+    initNatureAudio();
+    if (!natureAudio.ctx || !natureAudio.masterGain) return;
+
+    const actx = natureAudio.ctx;
+    if (enable) {
+      if (actx.state === 'suspended') {
+        actx.resume();
+      }
+      natureAudio.isPlaying = true;
+      const now = actx.currentTime;
+      natureAudio.masterGain.gain.cancelScheduledValues(now);
+      natureAudio.masterGain.gain.setValueAtTime(Math.max(0.0001, natureAudio.masterGain.gain.value), now);
+      natureAudio.masterGain.gain.linearRampToValueAtTime(0.38, now + 1.6);
+
+      if (soundToggleBtn) {
+        soundToggleBtn.classList.add('is-playing');
+        soundToggleBtn.setAttribute('aria-pressed', 'true');
+      }
+      if (soundLabelEl) {
+        soundLabelEl.textContent = 'Breeze On';
+      }
+    } else {
+      natureAudio.isPlaying = false;
+      const now = actx.currentTime;
+      natureAudio.masterGain.gain.cancelScheduledValues(now);
+      natureAudio.masterGain.gain.setValueAtTime(Math.max(0.0001, natureAudio.masterGain.gain.value), now);
+      natureAudio.masterGain.gain.linearRampToValueAtTime(0.0001, now + 0.6);
+
+      if (soundToggleBtn) {
+        soundToggleBtn.classList.remove('is-playing');
+        soundToggleBtn.setAttribute('aria-pressed', 'false');
+      }
+      if (soundLabelEl) {
+        soundLabelEl.textContent = 'Breeze Off';
+      }
+    }
+  }
+
+  if (soundToggleBtn) {
+    soundToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nextState = !natureAudio.isPlaying;
+      natureAudio.userMuted = !nextState;
+      setNatureSoundState(nextState);
+    });
+  }
+
+  // Gently start the soothing breeze on the visitor's first natural interaction unless they muted it
+  function handleFirstInteraction() {
+    if (!natureAudio.userMuted && !natureAudio.isPlaying) {
+      setNatureSoundState(true);
+    }
+    window.removeEventListener('pointerdown', handleFirstInteraction);
+    window.removeEventListener('keydown', handleFirstInteraction);
+  }
+  window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+  window.addEventListener('keydown', handleFirstInteraction, { once: true });
+
   function updateWind() {
     wind.time += 0.012;
     wind.gustTimer++;
@@ -681,6 +964,7 @@
     ctx.clearRect(0, 0, width, height);
 
     updateWind();
+    updateNatureAudio();
 
     // Update & draw visiting songbirds (#9bb78b)
     for (let i = 0; i < birds.length; i++) {
