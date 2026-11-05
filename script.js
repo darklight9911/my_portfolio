@@ -90,7 +90,7 @@
     mouse.lastY = e.clientY;
     mouse.x = e.clientX;
     mouse.y = e.clientY;
-  });
+  }, { passive: true });
 
   // Spawn zones corresponding to the left and right tree boughs
   function getTreeSpawnPoint(side) {
@@ -307,6 +307,10 @@
       this.tailBob = 0;
       this.hopOffset = 0;
       this.hopPhase = 0;
+      this.approachingChirped = false;
+      this.departingChirped = false;
+      this.chirpCooldown = 60 + Math.floor(Math.random() * 90);
+      this.chirpVisualTimer = 0;
     }
 
     startFlightIn() {
@@ -341,6 +345,7 @@
       this.x = this.startX;
       this.y = this.startY;
       this.facing = target.x >= this.startX ? 1 : -1;
+      this.approachingChirped = false;
       this.state = 'FLYING_IN';
     }
 
@@ -369,10 +374,21 @@
       const dist = Math.hypot(this.endX - this.startX, this.endY - this.startY);
       this.flightDuration = Math.max(115, Math.min(195, Math.floor(dist / 4.3)));
 
+      this.departingChirped = false;
+      if (Math.random() < 0.45) {
+        this.departingChirped = true;
+        this.chirpVisualTimer = 38;
+        triggerCuteBirdChirp(this.targetSide, 1);
+      }
+
       this.state = 'FLYING_AWAY';
     }
 
     update() {
+      if (this.chirpVisualTimer > 0) {
+        this.chirpVisualTimer--;
+      }
+
       if (this.state === 'WAITING') {
         this.timer--;
         if (this.timer <= 0) {
@@ -412,16 +428,25 @@
         this.x = nextX;
         this.y = nextY;
 
+        // Smooth, unhurried chirp as the bird glides in close to the branch
+        if (!this.approachingChirped && rawT >= 0.62) {
+          this.approachingChirped = true;
+          const burst = Math.random() < 0.35 ? 2 : 1;
+          this.chirpVisualTimer = burst * 40;
+          triggerCuteBirdChirp(this.targetSide, burst);
+        }
+
         if (rawT >= 1) {
           this.state = 'PERCHED';
           this.wingOpen = 0;
           this.flightPitch = 0;
           // Face inward toward the center of the canvas while perched
           this.facing = this.targetSide === 'left' ? 1 : -1;
-          // Sit on the branch for a random duration (5.5s to 11.5s at 60fps)
-          this.perchTimer = 330 + Math.floor(Math.random() * 360);
+          // Sit on the branch for a random duration (6s to 12.5s at 60fps)
+          this.perchTimer = 360 + Math.floor(Math.random() * 390);
+          // Calm pause after landing before chirping on the branch (1.8s - 3.6s)
+          this.chirpCooldown = 110 + Math.floor(Math.random() * 110);
           rustleBranchLeaves(this.x, this.y, this.targetSide);
-          triggerPerchedBirdChirp(this.targetSide);
         }
         return;
       }
@@ -446,6 +471,17 @@
 
         this.perchTimer--;
         this.tailBob += 0.05;
+
+        // Smooth, realistic chirps after natural pauses while resting on the branch
+        this.chirpCooldown--;
+        if (this.chirpCooldown <= 0 && this.perchTimer > 55) {
+          const burst = Math.random() < 0.38 ? 2 : 1;
+          this.chirpVisualTimer = burst * 42;
+          triggerCuteBirdChirp(this.targetSide, burst);
+          this.targetHeadTilt = (Math.random() - 0.5) * 0.28;
+          // Calm, realistic interval before next chirp (2.8s to 5.8s)
+          this.chirpCooldown = 170 + Math.floor(Math.random() * 180);
+        }
 
         // Occasional cute head tilt or looking around
         if (Math.random() < 0.012) {
@@ -598,14 +634,33 @@
       ctx.fillStyle = BIRD_PALETTE.body;
       ctx.fill();
 
-      // Tiny Beak
-      ctx.beginPath();
-      ctx.moveTo(4.4, -1.3);
-      ctx.lineTo(9.2, 0.2);
-      ctx.lineTo(4.4, 1.5);
-      ctx.closePath();
-      ctx.fillStyle = BIRD_PALETTE.beakAndLegs;
-      ctx.fill();
+      // Tiny Beak (opens smoothly while chirping)
+      const isChirpingNow = this.chirpVisualTimer > 0 && Math.sin(this.chirpVisualTimer * 0.28) > 0;
+      if (isChirpingNow) {
+        ctx.beginPath();
+        ctx.moveTo(4.4, -1.4);
+        ctx.lineTo(9.3, -0.8);
+        ctx.lineTo(4.4, 0.1);
+        ctx.closePath();
+        ctx.fillStyle = BIRD_PALETTE.beakAndLegs;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(4.4, 0.1);
+        ctx.lineTo(8.8, 1.3);
+        ctx.lineTo(4.4, 1.6);
+        ctx.closePath();
+        ctx.fillStyle = BIRD_PALETTE.beakAndLegs;
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(4.4, -1.3);
+        ctx.lineTo(9.2, 0.2);
+        ctx.lineTo(4.4, 1.5);
+        ctx.closePath();
+        ctx.fillStyle = BIRD_PALETTE.beakAndLegs;
+        ctx.fill();
+      }
 
       // Bright Dark Eye with tiny catchlight
       ctx.beginPath();
@@ -651,23 +706,41 @@
   const birds = [new VisitingBird(0), new VisitingBird(1)];
 
   // =========================================================
-  // SOOTHING NATURAL BREEZE & FOREST AMBIENCE (WEB AUDIO API)
+  // BOTANICAL NATURE SOUNDSCAPE (WOODLAND BREEZE & SONGBIRDS)
   // =========================================================
   const soundToggleBtn = document.getElementById('sound-toggle');
   const soundLabelEl = soundToggleBtn ? soundToggleBtn.querySelector('.sound-label') : null;
 
+  // Curated smooth, natural real bird chirp phrases from woodland-birds.mp3 (each ~0.82s - 0.98s long)
+  const CUTE_CHIRP_SLICES = [
+    { offset: 0.85, duration: 0.88 },
+    { offset: 3.98, duration: 0.92 },
+    { offset: 8.10, duration: 0.85 },
+    { offset: 11.15, duration: 0.82 },
+    { offset: 14.00, duration: 0.90 },
+    { offset: 19.85, duration: 0.88 },
+    { offset: 23.10, duration: 0.84 },
+    { offset: 26.25, duration: 0.92 },
+  ];
+
   const natureAudio = {
     ctx: null,
-    isPlaying: false,
-    userMuted: false,
+    isPlaying: false, // OFF by default; starts only when toggled on
+    userMuted: true,
     masterGain: null,
-    warmBreezeFilter: null,
-    warmBreezeGain: null,
-    canopyFilter: null,
-    canopyGain: null,
-    canopyPanner: null,
-    chirpTimer: 260,
+    breezeGain: null,
+    breezeFilter: null,
+    breezeHighpass: null,
+    breezeSource: null,
+    breezeBuffer: null,
+    birdBuffer: null,
+    breezeAudioEl: null,
+    isLoadingBreeze: false,
+    isLoadingBirds: false,
+    lastChirpTime: 0,
+    hasGivenFirstChirp: false,
   };
+  window.natureAudio = natureAudio;
 
   function initNatureAudio() {
     if (natureAudio.ctx) return;
@@ -682,158 +755,192 @@
     masterGain.connect(actx.destination);
     natureAudio.masterGain = masterGain;
 
-    // Generate a 6-second seamless brown/pink organic noise buffer (warm 1/f^2 roll-off, zero harsh static)
-    const sampleRate = actx.sampleRate;
-    const bufferLength = sampleRate * 6;
-    const noiseBuffer = actx.createBuffer(2, bufferLength, sampleRate);
+    // Highpass removes sub-rumble; warm lowpass removes noisy hiss into a silky, calm woodland breeze
+    const highpass = actx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.setValueAtTime(120, actx.currentTime);
 
-    for (let ch = 0; ch < 2; ch++) {
-      const output = noiseBuffer.getChannelData(ch);
-      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-      let lastOut = 0;
-      for (let i = 0; i < bufferLength; i++) {
-        const white = Math.random() * 2 - 1;
-        // Paul Kellet's pink noise filter blended with warm brownian integration
-        b0 = 0.99886 * b0 + white * 0.0555179;
-        b1 = 0.99332 * b1 + white * 0.0750759;
-        b2 = 0.96900 * b2 + white * 0.1538520;
-        b3 = 0.86650 * b3 + white * 0.3104856;
-        b4 = 0.55000 * b4 + white * 0.5329522;
-        b5 = -0.7616 * b5 - white * 0.0168980;
-        const pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
-        b6 = white * 0.115926;
+    const breezeFilter = actx.createBiquadFilter();
+    breezeFilter.type = 'lowpass';
+    breezeFilter.frequency.setValueAtTime(620, actx.currentTime);
 
-        // Smooth brownian low-frequency warmth
-        lastOut = (lastOut + 0.025 * white) / 1.025;
-        let sample = pink * 0.55 + lastOut * 0.95;
+    const breezeGain = actx.createGain();
+    breezeGain.gain.setValueAtTime(0.24, actx.currentTime);
 
-        // Cross-fade loop ends so the 6-second buffer loops with zero seam
-        const fadeSamples = sampleRate * 0.4;
-        if (i < fadeSamples) {
-          sample *= i / fadeSamples;
-        } else if (i > bufferLength - fadeSamples) {
-          sample *= (bufferLength - i) / fadeSamples;
-        }
-        output[i] = sample;
-      }
+    highpass.connect(breezeFilter);
+    breezeFilter.connect(breezeGain);
+    breezeGain.connect(masterGain);
+
+    natureAudio.breezeHighpass = highpass;
+    natureAudio.breezeFilter = breezeFilter;
+    natureAudio.breezeGain = breezeGain;
+
+    // Pre-create instant HTML5 audio stream for immediate playback before 1.8MB Web Audio buffer is decoded
+    if (!natureAudio.breezeAudioEl) {
+      const audioEl = new Audio('breeze-ambience.mp3');
+      audioEl.loop = true;
+      audioEl.volume = 0.20;
+      audioEl.preload = 'auto';
+      natureAudio.breezeAudioEl = audioEl;
     }
 
-    // Layer 1: Deep, Warm Meadow Breeze Swell (Low-pass sculpted air movement)
-    const breezeSource = actx.createBufferSource();
-    breezeSource.buffer = noiseBuffer;
-    breezeSource.loop = true;
+    // Load real woodland wind & rustling leaves into Web Audio Buffer (breeze-ambience.mp3)
+    loadBreezeBuffer();
 
-    const warmBreezeFilter = actx.createBiquadFilter();
-    warmBreezeFilter.type = 'lowpass';
-    warmBreezeFilter.frequency.setValueAtTime(165, actx.currentTime);
-    warmBreezeFilter.Q.setValueAtTime(0.7, actx.currentTime);
-
-    const warmBreezeSoftener = actx.createBiquadFilter();
-    warmBreezeSoftener.type = 'lowpass';
-    warmBreezeSoftener.frequency.setValueAtTime(310, actx.currentTime);
-
-    const warmBreezeGain = actx.createGain();
-    warmBreezeGain.gain.setValueAtTime(0.28, actx.currentTime);
-
-    breezeSource.connect(warmBreezeFilter);
-    warmBreezeFilter.connect(warmBreezeSoftener);
-    warmBreezeSoftener.connect(warmBreezeGain);
-    warmBreezeGain.connect(masterGain);
-    breezeSource.start(0);
-
-    natureAudio.warmBreezeFilter = warmBreezeFilter;
-    natureAudio.warmBreezeGain = warmBreezeGain;
-
-    // Layer 2: Soft Leaf Canopy Whisper (Gentle band-pass rustle through tree leaves)
-    const canopySource = actx.createBufferSource();
-    canopySource.buffer = noiseBuffer;
-    canopySource.loop = true;
-    canopySource.playbackRate.setValueAtTime(0.88, actx.currentTime);
-
-    const canopyFilter = actx.createBiquadFilter();
-    canopyFilter.type = 'bandpass';
-    canopyFilter.frequency.setValueAtTime(420, actx.currentTime);
-    canopyFilter.Q.setValueAtTime(1.15, actx.currentTime);
-
-    const canopyHighCut = actx.createBiquadFilter();
-    canopyHighCut.type = 'lowpass';
-    canopyHighCut.frequency.setValueAtTime(780, actx.currentTime);
-
-    const canopyGain = actx.createGain();
-    canopyGain.gain.setValueAtTime(0.11, actx.currentTime);
-
-    breezeSource; // keep reference
-    if (actx.createStereoPanner) {
-      const panner = actx.createStereoPanner();
-      canopySource.connect(canopyFilter);
-      canopyFilter.connect(canopyHighCut);
-      canopyHighCut.connect(panner);
-      panner.connect(canopyGain);
-      natureAudio.canopyPanner = panner;
-    } else {
-      canopySource.connect(canopyFilter);
-      canopyFilter.connect(canopyHighCut);
-      canopyHighCut.connect(canopyGain);
-    }
-    canopyGain.connect(masterGain);
-    canopySource.start(1.7);
-
-    natureAudio.canopyFilter = canopyFilter;
-    natureAudio.canopyGain = canopyGain;
+    // Load real woodland songbirds (woodland-birds.mp3)
+    loadBirdsBuffer();
   }
 
-  // Soft distant songbird notes in the canopy
-  function triggerPerchedBirdChirp(side) {
+  function loadBreezeBuffer() {
+    if (natureAudio.breezeBuffer || natureAudio.isLoadingBreeze || !natureAudio.ctx) return;
+    natureAudio.isLoadingBreeze = true;
+    fetch('breeze-ambience.mp3')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch breeze sound');
+        return res.arrayBuffer();
+      })
+      .then((buf) => natureAudio.ctx.decodeAudioData(buf))
+      .then((decoded) => {
+        natureAudio.breezeBuffer = decoded;
+        natureAudio.isLoadingBreeze = false;
+        if (natureAudio.isPlaying && !natureAudio.userMuted) {
+          if (natureAudio.ctx.state === 'running') {
+            startBreezeLoop();
+          }
+        }
+      })
+      .catch((err) => {
+        natureAudio.isLoadingBreeze = false;
+        console.warn('Breeze buffer load warning:', err);
+      });
+  }
+
+  function loadBirdsBuffer() {
+    if (natureAudio.birdBuffer || natureAudio.isLoadingBirds || !natureAudio.ctx) return;
+    natureAudio.isLoadingBirds = true;
+    fetch('woodland-birds.mp3')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch birds sound');
+        return res.arrayBuffer();
+      })
+      .then((buf) => natureAudio.ctx.decodeAudioData(buf))
+      .then((decoded) => {
+        natureAudio.birdBuffer = decoded;
+        natureAudio.isLoadingBirds = false;
+      })
+      .catch((err) => {
+        natureAudio.isLoadingBirds = false;
+        console.warn('Birds buffer load warning:', err);
+      });
+  }
+
+  function startBreezeLoop() {
+    if (!natureAudio.isPlaying || !natureAudio.ctx) return;
+
+    // If Web Audio buffer is ready and context running, play high-fidelity Web Audio buffer
+    if (natureAudio.breezeBuffer) {
+      if (natureAudio.breezeSource) return; // already active
+      const actx = natureAudio.ctx;
+      if (actx.state !== 'running') return;
+
+      try {
+        const src = actx.createBufferSource();
+        src.buffer = natureAudio.breezeBuffer;
+        src.loop = true;
+        src.connect(natureAudio.breezeHighpass);
+        src.start(0);
+        natureAudio.breezeSource = src;
+
+        // Seamlessly silence fallback HTML5 audio now that Web Audio buffer is playing
+        if (natureAudio.breezeAudioEl && !natureAudio.breezeAudioEl.paused) {
+          natureAudio.breezeAudioEl.pause();
+        }
+      } catch (e) {
+        console.warn('Error starting breeze loop:', e);
+      }
+    } else {
+      // While 1.8MB buffer is still loading/decoding, immediately stream HTML5 audio
+      if (natureAudio.breezeAudioEl && natureAudio.breezeAudioEl.paused && !natureAudio.userMuted) {
+        natureAudio.breezeAudioEl.play().catch(() => {});
+      }
+    }
+  }
+
+  function stopBreezeLoop() {
+    if (natureAudio.breezeSource) {
+      try {
+        natureAudio.breezeSource.stop();
+        natureAudio.breezeSource.disconnect();
+      } catch (_) {}
+      natureAudio.breezeSource = null;
+    }
+    if (natureAudio.breezeAudioEl && !natureAudio.breezeAudioEl.paused) {
+      natureAudio.breezeAudioEl.pause();
+    }
+  }
+
+  // Plays 1 or 2 smooth, unhurried, realistic bird chirps
+  function triggerCuteBirdChirp(side, burstCount = 1) {
     if (!natureAudio.isPlaying || !natureAudio.ctx || !natureAudio.masterGain) return;
     const actx = natureAudio.ctx;
-    if (actx.state !== 'running') return;
+    if (actx.state !== 'running' || !natureAudio.birdBuffer) return;
 
     const now = actx.currentTime;
-    // Gentle pentatonic woodland frequencies (mellow, flute-like)
-    const phrases = [
-      [1318.5, 1567.98],
-      [1174.66, 1479.98, 1318.5],
-      [1567.98, 1318.5],
-      [1046.5, 1318.5, 1567.98],
-    ];
-    const notes = phrases[Math.floor(Math.random() * phrases.length)];
+    // Prevent two birds from overlapping or chirping too rapidly back-to-back
+    if (now - natureAudio.lastChirpTime < 1.65) return;
+    natureAudio.lastChirpTime = now;
 
-    const filter = actx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1950, now);
+    const count = Math.max(1, Math.min(2, burstCount));
 
-    let outputNode = filter;
+    // Stereo pan matching the left or right tree branch where the bird is flying/perching
+    let targetNode = natureAudio.masterGain;
     if (actx.createStereoPanner) {
       const panner = actx.createStereoPanner();
-      const panVal = side === 'left' ? -0.45 : side === 'right' ? 0.45 : (Math.random() - 0.5) * 0.6;
+      const panVal = side === 'left' ? -0.42 : side === 'right' ? 0.42 : (Math.random() - 0.5) * 0.4;
       panner.pan.setValueAtTime(panVal, now);
-      filter.connect(panner);
-      outputNode = panner;
+      panner.connect(natureAudio.masterGain);
+      targetNode = panner;
     }
-    outputNode.connect(natureAudio.masterGain);
 
-    notes.forEach((freq, idx) => {
-      const start = now + idx * 0.19 + Math.random() * 0.03;
-      const dur = 0.15 + Math.random() * 0.05;
+    // Gentle band sculpting so the bird song is warm, clear, and smooth
+    const chirpHighpass = actx.createBiquadFilter();
+    chirpHighpass.type = 'highpass';
+    chirpHighpass.frequency.setValueAtTime(1150, now);
 
-      const osc = actx.createOscillator();
-      const noteGain = actx.createGain();
+    const chirpLowpass = actx.createBiquadFilter();
+    chirpLowpass.type = 'lowpass';
+    chirpLowpass.frequency.setValueAtTime(5000, now);
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq * 0.96, start);
-      osc.frequency.exponentialRampToValueAtTime(freq * 1.03, start + dur * 0.55);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.99, start + dur);
+    chirpHighpass.connect(chirpLowpass);
+    chirpLowpass.connect(targetNode);
 
-      noteGain.gain.setValueAtTime(0.0001, start);
-      noteGain.gain.linearRampToValueAtTime(0.014, start + dur * 0.28);
-      noteGain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    let timeOffset = 0;
+    for (let i = 0; i < count; i++) {
+      const slice = CUTE_CHIRP_SLICES[Math.floor(Math.random() * CUTE_CHIRP_SLICES.length)];
+      const start = now + timeOffset;
+      const dur = slice.duration;
 
-      osc.connect(noteGain);
-      noteGain.connect(filter);
+      const src = actx.createBufferSource();
+      src.buffer = natureAudio.birdBuffer;
+      // Natural 1.0x speed (0.96x - 1.01x) so the bird's voice is smooth, unhurried, and realistic
+      src.playbackRate.setValueAtTime(0.96 + Math.random() * 0.05, start);
 
-      osc.start(start);
-      osc.stop(start + dur + 0.02);
-    });
+      const env = actx.createGain();
+      env.gain.setValueAtTime(0.0001, start);
+      // Clean, pleasant level so bird calls stand out delightfully above the gentle breeze
+      env.gain.linearRampToValueAtTime(2.0, start + 0.12);
+      env.gain.setValueAtTime(2.0, start + Math.max(0.14, dur - 0.22));
+      env.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      src.connect(env);
+      env.connect(chirpHighpass);
+
+      src.start(start, slice.offset, dur + 0.05);
+      src.stop(start + dur + 0.06);
+
+      // Smooth, natural breath between two consecutive chirps
+      timeOffset += dur + 0.16 + Math.random() * 0.14;
+    }
   }
 
   function updateNatureAudio() {
@@ -842,34 +949,14 @@
     if (actx.state !== 'running') return;
 
     const now = actx.currentTime;
-    const windStrength = Math.min(1.6, Math.abs(wind.current));
+    const windStrength = Math.min(1.5, Math.abs(wind.current));
 
-    // Modulate warm breeze cutoff & volume smoothly with live wind gusts
-    if (natureAudio.warmBreezeFilter && natureAudio.warmBreezeGain) {
-      const targetBreezeFreq = 135 + windStrength * 95 + Math.sin(wind.time * 0.7) * 18;
-      const targetBreezeGain = 0.22 + windStrength * 0.14;
-      natureAudio.warmBreezeFilter.frequency.setTargetAtTime(targetBreezeFreq, now, 0.25);
-      natureAudio.warmBreezeGain.gain.setTargetAtTime(targetBreezeGain, now, 0.25);
-    }
-
-    // Modulate soft leaf canopy rustle & stereo drift with wind direction
-    if (natureAudio.canopyFilter && natureAudio.canopyGain) {
-      const targetCanopyFreq = 360 + windStrength * 190 + Math.cos(wind.time * 0.5) * 35;
-      const targetCanopyGain = 0.07 + windStrength * 0.085;
-      natureAudio.canopyFilter.frequency.setTargetAtTime(targetCanopyFreq, now, 0.2);
-      natureAudio.canopyGain.gain.setTargetAtTime(targetCanopyGain, now, 0.2);
-    }
-
-    if (natureAudio.canopyPanner) {
-      const panTarget = Math.max(-0.55, Math.min(0.55, wind.current * 0.35));
-      natureAudio.canopyPanner.pan.setTargetAtTime(panTarget, now, 0.4);
-    }
-
-    // Occasional distant woodland bird call every ~9-15 seconds
-    natureAudio.chirpTimer--;
-    if (natureAudio.chirpTimer <= 0) {
-      natureAudio.chirpTimer = 540 + Math.floor(Math.random() * 380);
-      triggerPerchedBirdChirp(Math.random() < 0.5 ? 'left' : 'right');
+    // Gently breathe the soft woodland breeze filter & volume with live wind gusts (warm, quiet & non-noisy)
+    if (natureAudio.breezeFilter && natureAudio.breezeGain) {
+      const targetFreq = 580 + windStrength * 140;
+      const targetGain = 0.22 + windStrength * 0.08;
+      natureAudio.breezeFilter.frequency.setTargetAtTime(targetFreq, now, 0.35);
+      natureAudio.breezeGain.gain.setTargetAtTime(targetGain, now, 0.35);
     }
   }
 
@@ -878,15 +965,25 @@
     if (!natureAudio.ctx || !natureAudio.masterGain) return;
 
     const actx = natureAudio.ctx;
+    const now = actx.currentTime;
+
     if (enable) {
-      if (actx.state === 'suspended') {
-        actx.resume();
-      }
       natureAudio.isPlaying = true;
-      const now = actx.currentTime;
+      natureAudio.userMuted = false;
+
+      if (actx.state === 'suspended') {
+        actx.resume().then(() => {
+          startBreezeLoop();
+          setTimeout(() => triggerCuteBirdChirp('right', 1), 350);
+        }).catch(() => {});
+      } else {
+        startBreezeLoop();
+        setTimeout(() => triggerCuteBirdChirp('right', 1), 350);
+      }
+
       natureAudio.masterGain.gain.cancelScheduledValues(now);
-      natureAudio.masterGain.gain.setValueAtTime(Math.max(0.0001, natureAudio.masterGain.gain.value), now);
-      natureAudio.masterGain.gain.linearRampToValueAtTime(0.38, now + 1.6);
+      natureAudio.masterGain.gain.setValueAtTime(0.0001, now);
+      natureAudio.masterGain.gain.linearRampToValueAtTime(1.0, now + 0.35);
 
       if (soundToggleBtn) {
         soundToggleBtn.classList.add('is-playing');
@@ -897,10 +994,11 @@
       }
     } else {
       natureAudio.isPlaying = false;
-      const now = actx.currentTime;
+      natureAudio.userMuted = true;
+
       natureAudio.masterGain.gain.cancelScheduledValues(now);
-      natureAudio.masterGain.gain.setValueAtTime(Math.max(0.0001, natureAudio.masterGain.gain.value), now);
-      natureAudio.masterGain.gain.linearRampToValueAtTime(0.0001, now + 0.6);
+      natureAudio.masterGain.gain.setValueAtTime(0.0001, now);
+      stopBreezeLoop();
 
       if (soundToggleBtn) {
         soundToggleBtn.classList.remove('is-playing');
@@ -915,22 +1013,29 @@
   if (soundToggleBtn) {
     soundToggleBtn.addEventListener('click', (e) => {
       e.stopPropagation();
+      initNatureAudio();
+
       const nextState = !natureAudio.isPlaying;
-      natureAudio.userMuted = !nextState;
       setNatureSoundState(nextState);
     });
   }
 
-  // Gently start the soothing breeze on the visitor's first natural interaction unless they muted it
-  function handleFirstInteraction() {
-    if (!natureAudio.userMuted && !natureAudio.isPlaying) {
-      setNatureSoundState(true);
+  // Pre-load audio buffers quietly in background so sound starts instantly when toggled
+  initNatureAudio();
+
+  // Sound toggle button is only visible in the Home (Hero) section
+  function updateSoundToggleVisibility() {
+    if (!soundToggleBtn) return;
+    const inHome = window.scrollY < (window.innerHeight * 0.45);
+    if (inHome) {
+      soundToggleBtn.classList.remove('is-hidden');
+    } else {
+      soundToggleBtn.classList.add('is-hidden');
     }
-    window.removeEventListener('pointerdown', handleFirstInteraction);
-    window.removeEventListener('keydown', handleFirstInteraction);
   }
-  window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-  window.addEventListener('keydown', handleFirstInteraction, { once: true });
+  window.addEventListener('scroll', updateSoundToggleVisibility, { passive: true });
+  window.addEventListener('resize', updateSoundToggleVisibility, { passive: true });
+  updateSoundToggleVisibility();
 
   function updateWind() {
     wind.time += 0.012;
