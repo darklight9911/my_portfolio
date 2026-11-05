@@ -1,0 +1,1193 @@
+:root {
+  /* Complete 10-Shade Cozy Green Palette (Verdant Veil) */
+  --green-100: #d4e1c5;
+  --green-200: #b7c9a4;
+  --green-300: #9bb78b;
+  --green-400: #7fa471;
+  --green-500: #5b8b5a;
+  --green-600: #4a7a4d;
+  --green-700: #3e6c41;
+  --green-800: #2e5a34;
+  --green-900: #1f4730;
+  --green-950: #1a3b2a;
+
+  --bg-color: var(--green-100);
+  --font-color: var(--green-800);
+  --deep-green: var(--green-950);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-color);
+  color: var(--font-color);
+  font-family: 'Cormorant Garamond', serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.canvas {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+/* =========================================
+   SIDE TREES & WIND BRANCH ANIMATIONS
+   ========================================= */
+.tree-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(220px, 34vw, 480px);
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+.tree-left {
+  left: 0;
+}
+
+.tree-right {
+  right: 0;
+}
+
+.tree-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Ambient canopy soft breathing in upper corners */
+.canopy-ambient {
+  animation: canopyBreathe 7s ease-in-out infinite alternate;
+  transform-origin: 80px 150px;
+}
+
+/* Distant background tree branches (slower parallax sway) */
+.distant-bough {
+  animation: windSwayPrimary 8.5s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.distant-bough-alt {
+  animation: windSwayPrimaryAlt 9.4s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Main Bough Wind Sway Animations */
+.bough {
+  will-change: transform;
+}
+
+.bough-slow {
+  animation: windSwayPrimary 6.5s ease-in-out infinite alternate;
+}
+
+.bough-slow-alt {
+  animation: windSwayPrimaryAlt 7.2s ease-in-out infinite alternate;
+}
+
+.bough-medium {
+  animation: windSwayMedium 5.2s ease-in-out infinite alternate;
+}
+
+.bough-medium-alt {
+  animation: windSwayMediumAlt 5.8s ease-in-out infinite alternate;
+}
+
+.bough-fast {
+  animation: windSwayFast 4.3s ease-in-out infinite alternate;
+}
+
+.bough-fast-alt {
+  animation: windSwayFastAlt 4.7s ease-in-out infinite alternate;
+}
+
+/* Hanging Sprig Breeze Flutter */
+.sprig-sway {
+  animation: sprigFlutter 3.6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.sprig-sway-alt {
+  animation: sprigFlutterAlt 4.1s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.base-foliage {
+  animation: baseRustle 4.8s ease-in-out infinite alternate;
+  transform-origin: 20px 895px;
+}
+
+/* Natural Asymmetric Wind Keyframes (gentle gusting & settling) */
+@keyframes windSwayPrimary {
+  0% {
+    transform: rotate(-1.2deg) skewX(-0.5deg);
+  }
+  45% {
+    transform: rotate(2.4deg) skewX(1.2deg);
+  }
+  75% {
+    transform: rotate(1.1deg) skewX(0.4deg);
+  }
+  100% {
+    transform: rotate(3.4deg) skewX(1.6deg);
+  }
+}
+
+@keyframes windSwayPrimaryAlt {
+  0% {
+    transform: rotate(1.8deg) skewX(0.8deg);
+  }
+  40% {
+    transform: rotate(-1.5deg) skewX(-0.6deg);
+  }
+  70% {
+    transform: rotate(-0.4deg) skewX(-0.2deg);
+  }
+  100% {
+    transform: rotate(-2.8deg) skewX(-1.3deg);
+  }
+}
+
+@keyframes windSwayMedium {
+  0% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(2.8deg);
+  }
+  100% {
+    transform: rotate(4.2deg);
+  }
+}
+
+@keyframes windSwayMediumAlt {
+  0% {
+    transform: rotate(2.2deg);
+  }
+  50% {
+    transform: rotate(-1.8deg);
+  }
+  100% {
+    transform: rotate(-3.5deg);
+  }
+}
+
+@keyframes windSwayFast {
+  0% {
+    transform: rotate(-2deg);
+  }
+  60% {
+    transform: rotate(3.5deg);
+  }
+  100% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes windSwayFastAlt {
+  0% {
+    transform: rotate(2.6deg);
+  }
+  55% {
+    transform: rotate(-2.8deg);
+  }
+  100% {
+    transform: rotate(-0.8deg);
+  }
+}
+
+@keyframes sprigFlutter {
+  0% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(6.5deg);
+  }
+  100% {
+    transform: rotate(10.5deg);
+  }
+}
+
+@keyframes sprigFlutterAlt {
+  0% {
+    transform: rotate(5deg);
+  }
+  45% {
+    transform: rotate(-4.5deg);
+  }
+  100% {
+    transform: rotate(8.5deg);
+  }
+}
+
+@keyframes canopyBreathe {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(6px, 4px) scale(1.03);
+  }
+}
+
+@keyframes baseRustle {
+  0% {
+    transform: rotate(-1.5deg);
+  }
+  100% {
+    transform: rotate(3.2deg);
+  }
+}
+
+/* =========================================
+   FALLING LEAVES & WIND CANVAS (FIXED)
+   ========================================= */
+#leaves-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* =========================================
+   OPTION 5: GLIDING BIRD REVEALING BREEZE TRAIL
+   ========================================= */
+.top-feature-breeze-trail {
+  position: absolute;
+  top: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  width: clamp(300px, 36vw, 420px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.breeze-trail-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.breeze-welcome-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 23px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  fill: #2e5a34;
+}
+
+.breeze-reveal-group {
+  animation: trailRevealCycle 9s ease-in-out infinite;
+}
+
+.gliding-trail-bird {
+  animation: birdSweepAcross 9s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+}
+
+.glide-wing-front {
+  animation: glideFlapFront 0.42s ease-in-out infinite alternate;
+}
+
+.glide-wing-back {
+  animation: glideFlapBack 0.42s ease-in-out infinite alternate;
+}
+
+.wake-leaf {
+  animation: wakeLeafFloat 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes birdSweepAcross {
+  0% {
+    transform: translate(15px, 60px) rotate(-10deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  38% {
+    transform: translate(440px, 32px) rotate(-6deg);
+    opacity: 1;
+  }
+  46%, 100% {
+    transform: translate(480px, 24px) rotate(-8deg);
+    opacity: 0;
+  }
+}
+
+@keyframes trailRevealCycle {
+  0%, 6% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  36%, 84% {
+    opacity: 1;
+    clip-path: inset(0 0% 0 0);
+  }
+  96%, 100% {
+    opacity: 0;
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+@keyframes glideFlapFront {
+  0% {
+    transform: rotate(-18deg);
+  }
+  100% {
+    transform: rotate(24deg);
+  }
+}
+
+@keyframes glideFlapBack {
+  0% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes wakeLeafFloat {
+  0% {
+    transform: translateY(-1.5px);
+  }
+  100% {
+    transform: translateY(1.5px);
+  }
+}
+
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 560px;
+  padding: 2rem;
+  background-color: var(--green-100);
+  box-shadow: 0 0 36px 24px var(--green-100);
+  border-radius: 48px;
+  animation: fadeIn 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-greeting {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+  font-weight: 400;
+  color: var(--green-600);
+  margin-bottom: 0.15rem;
+}
+
+.hero-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2rem, 7vw, 5.4rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.04;
+  color: var(--green-950);
+  margin-bottom: 0.55rem;
+}
+
+.hero-role {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--green-700);
+  margin-bottom: 1.35rem;
+}
+
+.hero-bio {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(0.95rem, 1.45vw, 1.08rem);
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--green-800);
+  max-width: 44ch;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.95rem 2.15rem;
+  /* Organic Botanical Leaf Shape: rounded belly, pointed base (bottom-left) & pointed tip (top-right) */
+  border-radius: 38px 4px 38px 4px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle diagonal leaf midrib vein inside the button */
+.btn-leaf::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 32px 2px 32px 2px;
+  background: linear-gradient(
+    -18deg,
+    transparent 47%,
+    currentColor 49.5%,
+    currentColor 50.5%,
+    transparent 53%
+  );
+  opacity: 0.09;
+  pointer-events: none;
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary {
+  background-color: var(--green-800);
+  color: var(--green-100);
+  border: 1.5px solid var(--green-800);
+}
+
+.btn-primary:hover {
+  background-color: var(--green-950);
+  border-color: var(--green-950);
+  transform: translateY(-3px) rotate(-2deg);
+}
+
+.btn-secondary {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 45%, var(--green-100));
+  color: var(--green-800);
+  border: 1.5px solid var(--green-500);
+}
+
+.btn-secondary:hover {
+  background-color: var(--green-300);
+  background-color: color-mix(in srgb, var(--green-300) 60%, var(--green-100));
+  border-color: var(--green-800);
+  color: var(--green-950);
+  transform: translateY(-3px) rotate(-2deg);
+}
+
+/* Subtle bottom scroll cue */
+.scroll-cue {
+  position: absolute;
+  bottom: 1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.75;
+  text-decoration: none;
+  transition: opacity 0.25s ease;
+}
+
+.scroll-cue:hover {
+  opacity: 1;
+}
+
+.scroll-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--green-700);
+}
+
+.scroll-line {
+  width: 1px;
+  height: 28px;
+  background-color: var(--green-400);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-line::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--green-800);
+  animation: scrollDrop 2.2s ease-in-out infinite;
+}
+
+@keyframes scrollDrop {
+  0% {
+    top: -100%;
+  }
+  50% {
+    top: 0%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   SCROLLABLE PORTFOLIO SECTIONS BELOW HERO
+   ========================================= */
+.page-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+}
+
+.portfolio-section {
+  position: relative;
+  padding: clamp(5rem, 10vw, 8.5rem) 1.5rem;
+  overflow: hidden;
+}
+
+.section-container {
+  max-width: 1020px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Scroll reveal transition */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Continuous Left & Right Growing Vine Rails */
+.growing-vine-rail {
+  position: absolute;
+  top: -6px;
+  bottom: 0;
+  width: clamp(120px, 18.48vw, 261px);
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: top center;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.growing-vine-left {
+  left: 0;
+}
+
+.growing-vine-right {
+  right: 0;
+}
+
+.vine-rail-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.vine-grow-path {
+  will-change: stroke-dashoffset;
+}
+
+.vine-sprout {
+  opacity: 0;
+  scale: 0.12;
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), scale 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vine-sprout.is-sprouted {
+  opacity: 1;
+  scale: 1;
+}
+
+.vine-sprout.distant-bough.is-sprouted,
+.vine-sprout.distant-bough-alt.is-sprouted {
+  opacity: 0.52;
+  scale: 1;
+}
+
+/* Slightly livelier branch sway speed specifically for the growing vines (Home section untouched) */
+.growing-vine-rail .bough-slow {
+  animation-duration: 4.6s;
+}
+
+.growing-vine-rail .bough-slow-alt {
+  animation-duration: 5.0s;
+}
+
+.growing-vine-rail .bough-medium {
+  animation-duration: 3.8s;
+}
+
+.growing-vine-rail .bough-medium-alt {
+  animation-duration: 4.2s;
+}
+
+.growing-vine-rail .bough-fast {
+  animation-duration: 3.2s;
+}
+
+.growing-vine-rail .bough-fast-alt {
+  animation-duration: 3.5s;
+}
+
+.growing-vine-rail .distant-bough {
+  animation-duration: 5.8s;
+}
+
+.growing-vine-rail .distant-bough-alt {
+  animation-duration: 6.4s;
+}
+
+/* Section Headers */
+.section-header {
+  margin-bottom: 3.2rem;
+  display: inline-block;
+  background-color: var(--green-100);
+  box-shadow: 0 0 24px 16px var(--green-100);
+  border-radius: 24px;
+}
+
+.section-index {
+  display: inline-block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--green-600);
+  margin-bottom: 0.55rem;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.3rem);
+  font-weight: 400;
+  color: var(--green-950);
+  line-height: 1.12;
+}
+
+/* 01. About Section */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.about-story {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--green-900);
+  background-color: var(--green-100);
+  box-shadow: 0 0 28px 18px var(--green-100);
+  border-radius: 28px;
+}
+
+.about-story strong {
+  font-weight: 500;
+  color: var(--green-950);
+}
+
+.about-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.pillar-card {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 45%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 24px 4px 24px 4px;
+  padding: 1.35rem 1.5rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.pillar-card:hover {
+  transform: translateY(-2px);
+  background-color: color-mix(in srgb, var(--green-200) 68%, var(--green-100));
+}
+
+.pillar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+}
+
+.pillar-header h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--green-950);
+}
+
+.pillar-card p {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--green-800);
+}
+
+/* 02. Tech Stack & Skills */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem;
+}
+
+.skill-group-card {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 42%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 28px 6px 28px 6px;
+  padding: 2rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.skill-group-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--green-600);
+}
+
+.skill-group-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green-600);
+  margin-bottom: 0.35rem;
+}
+
+.skill-group-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--green-950);
+  margin-bottom: 0.6rem;
+}
+
+.skill-group-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--green-800);
+  margin-bottom: 1.4rem;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: auto;
+}
+
+.leaf-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--green-950);
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-300) 42%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 16px 3px 16px 3px;
+  padding: 0.38rem 0.85rem;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.leaf-tag:hover {
+  background-color: var(--green-800);
+  color: var(--green-100);
+  border-color: var(--green-800);
+  transform: translateY(-1px);
+}
+
+.leaf-tag-sm {
+  font-size: 0.74rem;
+  padding: 0.3rem 0.75rem;
+}
+
+/* 03. Selected Projects */
+.projects-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.8rem;
+}
+
+.project-card {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 44%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 32px 6px 32px 6px;
+  padding: 2.1rem 1.85rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s ease, background-color 0.35s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  background-color: color-mix(in srgb, var(--green-200) 64%, var(--green-100));
+}
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--green-700);
+}
+
+.project-type {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+
+.project-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.65rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--green-950);
+  margin-bottom: 0.85rem;
+}
+
+.project-description {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.68;
+  color: var(--green-800);
+  margin-bottom: 1.4rem;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.6rem;
+  margin-top: auto;
+}
+
+.project-links {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  padding: 0.65rem 1.35rem;
+  font-size: 0.74rem;
+}
+
+/* 04. Experience & Education Growing Stem Timeline */
+.stem-timeline {
+  position: relative;
+  padding-left: 2.4rem;
+  border-left: 1.5px solid var(--green-400);
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  margin-left: 0.75rem;
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-node {
+  position: absolute;
+  left: -3.05rem;
+  top: 0.15rem;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--green-100);
+  border: 1.5px solid var(--green-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-content {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 42%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 26px 4px 26px 4px;
+  padding: 1.6rem 1.85rem;
+}
+
+.timeline-period {
+  display: inline-block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green-600);
+  margin-bottom: 0.3rem;
+}
+
+.timeline-role {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+  color: var(--green-950);
+  margin-bottom: 0.2rem;
+}
+
+.timeline-org {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: var(--green-700);
+  margin-bottom: 0.75rem;
+}
+
+.timeline-content p {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.68;
+  color: var(--green-800);
+}
+
+/* 05. Contact Section */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.contact-info {
+  background-color: var(--green-100);
+  box-shadow: 0 0 28px 18px var(--green-100);
+  border-radius: 28px;
+}
+
+.contact-lead {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--green-900);
+  margin-bottom: 1.8rem;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.contact-pill {
+  padding: 0.6rem 1.15rem;
+  font-size: 0.84rem;
+}
+
+.contact-form {
+  background-color: var(--green-200);
+  background-color: color-mix(in srgb, var(--green-200) 45%, var(--green-100));
+  border: 1px solid var(--green-400);
+  border-radius: 32px 6px 32px 6px;
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-field label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green-800);
+}
+
+.form-field input,
+.form-field textarea {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.94rem;
+  color: var(--green-950);
+  background-color: var(--green-100);
+  border: 1px solid var(--green-400);
+  border-radius: 18px 4px 18px 4px;
+  padding: 0.85rem 1.1rem;
+  outline: none;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--green-500);
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--green-800);
+  background-color: var(--green-100);
+}
+
+/* Footer */
+.site-footer {
+  padding: 2.4rem 1.5rem 3rem;
+  border-top: 1px solid var(--green-300);
+  background-color: var(--green-100);
+}
+
+.footer-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.84rem;
+  color: var(--green-800);
+}
+
+.footer-credit strong {
+  font-weight: 500;
+  color: var(--green-950);
+}
+
+.back-to-top {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--green-800);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.back-to-top:hover {
+  color: var(--green-950);
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 860px) {
+  .about-grid,
+  .skills-grid,
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tree-container {
+    width: 42vw;
+    opacity: 0.88;
+  }
+
+  .section-branch {
+    opacity: 0.4;
+    width: 120px;
+  }
+}

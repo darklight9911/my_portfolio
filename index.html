@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umme Munia | Portfolio</title>
+  
+  <!-- Google Fonts: Cormorant Garamond (Unique & Editorial Serif) + Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- FALLING LEAVES ANIMATION CANVAS (Fixed in background behind all content) -->
+  <canvas id="leaves-canvas" aria-hidden="true"></canvas>
+
+  <main class="canvas">
+    <!-- Shared Botanical SVG Definitions -->
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
+      <defs>
+        <!-- Single pointed botanical leaf -->
+        <g id="leaf-dark">
+          <path d="M 0,0 C -4.5,-7 -4,-17 0,-24 C 4,-17 4.5,-7 0,0 Z" fill="#1a3b2a" />
+          <path d="M 0,-1 L 0,-19" stroke="#d4e1c5" stroke-width="0.5" stroke-opacity="0.35" stroke-linecap="round" />
+        </g>
+        <g id="leaf-mid">
+          <path d="M 0,0 C -4.5,-7 -4,-17 0,-24 C 4,-17 4.5,-7 0,0 Z" fill="#2e5a34" />
+          <path d="M 0,-1 L 0,-19" stroke="#d4e1c5" stroke-width="0.5" stroke-opacity="0.4" stroke-linecap="round" />
+        </g>
+        <g id="leaf-soft">
+          <path d="M 0,0 C -4,-6.5 -3.5,-15 0,-22 C 3.5,-15 4,-6.5 0,0 Z" fill="#4a7a4d" />
+          <path d="M 0,-1 L 0,-17" stroke="#d4e1c5" stroke-width="0.5" stroke-opacity="0.45" stroke-linecap="round" />
+        </g>
+        <g id="leaf-light">
+          <path d="M 0,0 C -3.8,-6 -3.2,-14 0,-20 C 3.2,-14 3.8,-6 0,0 Z" fill="#5b8b5a" />
+          <path d="M 0,-1 L 0,-15" stroke="#1a3b2a" stroke-width="0.4" stroke-opacity="0.25" stroke-linecap="round" />
+        </g>
+
+        <!-- Lush Botanical Twig (extends outward along +X) -->
+        <g id="botanical-twig">
+          <path d="M 0,0 Q 32,-6 68,-2 Q 95,1 118,8" fill="none" stroke="#1a3b2a" stroke-width="1.6" stroke-linecap="round" opacity="0.8" />
+          <use href="#leaf-dark" transform="translate(14,-2) rotate(38) scale(0.85)" />
+          <use href="#leaf-soft" transform="translate(22,-3) rotate(135) scale(0.9)" />
+          <use href="#leaf-mid" transform="translate(36,-4) rotate(48) scale(1.0)" />
+          <use href="#leaf-light" transform="translate(46,-4) rotate(128) scale(0.85)" />
+          <use href="#leaf-dark" transform="translate(60,-3) rotate(55) scale(0.95)" />
+          <use href="#leaf-mid" transform="translate(72,-1) rotate(132) scale(0.9)" />
+          <use href="#leaf-soft" transform="translate(86,2) rotate(62) scale(0.85)" />
+          <use href="#leaf-light" transform="translate(96,4) rotate(125) scale(0.75)" />
+          <use href="#leaf-mid" transform="translate(108,6) rotate(72) scale(0.75)" />
+          <use href="#leaf-soft" transform="translate(118,8) rotate(98) scale(0.8)" />
+        </g>
+
+        <!-- Hanging Willow/Olive Sprig (drapes gently downward) -->
+        <g id="hanging-sprig">
+          <path d="M 0,0 C 8,22 14,48 10,78 C 8,96 4,112 2,126" fill="none" stroke="#2e5a34" stroke-width="1.2" stroke-linecap="round" opacity="0.7" />
+          <use href="#leaf-mid" transform="translate(5,16) rotate(145) scale(0.8)" />
+          <use href="#leaf-light" transform="translate(8,26) rotate(195) scale(0.75)" />
+          <use href="#leaf-dark" transform="translate(10,42) rotate(150) scale(0.85)" />
+          <use href="#leaf-soft" transform="translate(11,56) rotate(198) scale(0.8)" />
+          <use href="#leaf-mid" transform="translate(10,72) rotate(158) scale(0.78)" />
+          <use href="#leaf-light" transform="translate(8,88) rotate(192) scale(0.72)" />
+          <use href="#leaf-soft" transform="translate(5,104) rotate(165) scale(0.68)" />
+          <use href="#leaf-mid" transform="translate(2,124) rotate(182) scale(0.65)" />
+        </g>
+
+        <!-- Rich Leaf Cluster Rosette -->
+        <g id="leaf-cluster">
+          <use href="#leaf-light" transform="rotate(-55) scale(1.1)" opacity="0.75" />
+          <use href="#leaf-soft" transform="rotate(-20) scale(1.2)" opacity="0.85" />
+          <use href="#leaf-mid" transform="rotate(18) scale(1.15)" />
+          <use href="#leaf-dark" transform="rotate(52) scale(1.0)" opacity="0.9" />
+          <use href="#leaf-soft" transform="rotate(88) scale(0.95)" opacity="0.8" />
+          <use href="#leaf-light" transform="rotate(130) scale(0.9)" opacity="0.7" />
+        </g>
+
+        <!-- Distant Misty Leaf & Airy Twig (for background trees) -->
+        <g id="leaf-distant">
+          <path d="M 0,0 C -3.6,-5.8 -3,-13.5 0,-19 C 3,-13.5 3.6,-5.8 0,0 Z" fill="#7fa471" />
+        </g>
+        <g id="distant-twig">
+          <path d="M 0,0 Q 35,-5 78,2" fill="none" stroke="#7fa471" stroke-width="1.3" stroke-linecap="round" />
+          <use href="#leaf-distant" transform="translate(18,-2) rotate(45) scale(0.85)" />
+          <use href="#leaf-distant" transform="translate(34,-2) rotate(130) scale(0.8)" />
+          <use href="#leaf-distant" transform="translate(52,-1) rotate(55) scale(0.85)" />
+          <use href="#leaf-distant" transform="translate(66,1) rotate(125) scale(0.75)" />
+          <use href="#leaf-distant" transform="translate(78,2) rotate(92) scale(0.75)" />
+        </g>
+        <g id="distant-sprig">
+          <path d="M 0,0 C 6,20 10,44 6,72" fill="none" stroke="#7fa471" stroke-width="1.0" stroke-linecap="round" />
+          <use href="#leaf-distant" transform="translate(4,18) rotate(150) scale(0.72)" />
+          <use href="#leaf-distant" transform="translate(7,36) rotate(195) scale(0.7)" />
+          <use href="#leaf-distant" transform="translate(7,54) rotate(158) scale(0.65)" />
+          <use href="#leaf-distant" transform="translate(6,72) rotate(182) scale(0.6)" />
+        </g>
+      </defs>
+    </svg>
+
+    <!-- LEFT TREE -->
+    <div class="tree-container tree-left" aria-hidden="true">
+      <svg class="tree-svg" viewBox="0 0 460 900" preserveAspectRatio="xMinYMax slice">
+        <!-- Soft Ambient Canopy Shapes in Upper Corner -->
+        <g class="canopy-ambient">
+          <ellipse cx="40" cy="80" rx="240" ry="130" fill="#9bb78b" opacity="0.28" />
+          <ellipse cx="160" cy="40" rx="210" ry="100" fill="#7fa471" opacity="0.20" />
+          <ellipse cx="30" cy="240" rx="180" ry="110" fill="#b7c9a4" opacity="0.32" />
+        </g>
+
+        <!-- DISTANT SHORT BACKGROUND TREE (Height reaches just above 3rd branch of main tree, zero overlap with upper canopy shapes) -->
+        <g class="distant-tree" opacity="0.52">
+          <!-- Slender trunk rising from bottom (x=27..33) up to y=398 (just above 3rd branch of main tree) -->
+          <path d="M 33,905 C 35,820 42,710 38,595 C 35,510 30,445 24,398 C 19,445 22,510 24,595 C 26,710 27,820 27,905 Z" fill="#7fa471" opacity="0.65" />
+
+          <!-- Branch Above 3rd Branch of Main Tree (y ~ 405..388, between 2nd and 3rd main branches, below canopy shapes) -->
+          <g class="distant-bough-alt" style="transform-origin: 26px 408px;">
+            <path d="M 24,408 C 70,388 124,380 182,386 C 206,389 226,395 242,404" fill="none" stroke="#7fa471" stroke-width="3.2" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(65,390) rotate(-3) scale(0.86)" />
+            <use href="#distant-twig" transform="translate(148,383) rotate(9) scale(0.82)" />
+            <use href="#distant-sprig" transform="translate(128,384) scale(0.75)" />
+          </g>
+
+          <!-- Branch Below 3rd Branch of Main Tree (y ~ 535..518) -->
+          <g class="distant-bough" style="transform-origin: 28px 545px;">
+            <path d="M 26,545 C 72,524 128,516 188,522 C 214,525 235,532 252,542" fill="none" stroke="#7fa471" stroke-width="3.4" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(68,526) rotate(-4) scale(0.88)" />
+            <use href="#distant-twig" transform="translate(152,519) rotate(8) scale(0.85)" />
+            <use href="#distant-twig" transform="translate(195,524) rotate(16) scale(0.76)" />
+            <use href="#distant-sprig" transform="translate(132,520) scale(0.78)" />
+          </g>
+
+          <!-- Middle Branch of Short Tree (y ~ 605..585) -->
+          <g class="distant-bough-alt" style="transform-origin: 36px 605px;">
+            <path d="M 34,606 C 78,588 128,582 178,588" fill="none" stroke="#7fa471" stroke-width="2.8" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(68,591) rotate(2) scale(0.82)" />
+            <use href="#distant-twig" transform="translate(122,585) rotate(12) scale(0.76)" />
+          </g>
+
+          <!-- Lower Branch of Short Tree (y ~ 760..735) -->
+          <g class="distant-bough" style="transform-origin: 34px 760px;">
+            <path d="M 32,762 C 78,740 132,732 186,738" fill="none" stroke="#7fa471" stroke-width="3.0" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(65,744) rotate(-3) scale(0.85)" />
+            <use href="#distant-twig" transform="translate(128,735) rotate(10) scale(0.8)" />
+            <use href="#distant-sprig" transform="translate(112,736) scale(0.72)" />
+          </g>
+        </g>
+
+        <!-- Main Tree Trunk & Primary Boughs -->
+        <g class="tree-trunk">
+          <!-- Main Trunk rising along left edge -->
+          <path d="M 15,905 C 16,820 28,720 26,600 C 24,460 12,320 8,180 C 5,90 15,30 45,-20 L -35,-20 L -35,905 Z" fill="#1a3b2a" />
+          <!-- Subtle inner bark highlight -->
+          <path d="M 10,900 C 20,760 30,620 26,470 C 22,350 14,220 12,100" fill="none" stroke="#2e5a34" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+        </g>
+
+        <!-- Upper Canopy Bough (Sways gently) -->
+        <g class="bough bough-slow" style="transform-origin: 15px 120px;">
+          <!-- Main Upper Branch -->
+          <path d="M 8,140 C 65,95 145,58 245,42 C 310,32 365,34 415,48" fill="none" stroke="#1a3b2a" stroke-width="9" stroke-linecap="round" />
+          <path d="M 115,78 C 175,68 230,78 285,102" fill="none" stroke="#1a3b2a" stroke-width="4.5" stroke-linecap="round" />
+          <path d="M 205,50 C 260,30 315,15 365,12" fill="none" stroke="#1a3b2a" stroke-width="4" stroke-linecap="round" />
+          <path d="M 55,110 C 95,125 135,148 168,175" fill="none" stroke="#1a3b2a" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- Bird Perch Spots on Upper Bough -->
+          <circle class="perch-spot" data-side="left" cx="175" cy="54" r="1" fill="none" />
+          <circle class="perch-spot" data-side="left" cx="268" cy="36" r="1" fill="none" />
+          <circle class="perch-spot" data-side="left" cx="220" cy="79" r="1" fill="none" />
+
+          <!-- Hanging Sprigs from Upper Bough -->
+          <g class="sprig-sway" style="transform-origin: 95px 85px;">
+            <use href="#hanging-sprig" transform="translate(95,85) scale(1.1)" />
+          </g>
+          <g class="sprig-sway-alt" style="transform-origin: 185px 55px;">
+            <use href="#hanging-sprig" transform="translate(185,55) scale(1.2)" />
+          </g>
+          <g class="sprig-sway" style="transform-origin: 275px 40px;">
+            <use href="#hanging-sprig" transform="translate(275,40) scale(1.0)" />
+          </g>
+          <g class="sprig-sway-alt" style="transform-origin: 350px 38px;">
+            <use href="#hanging-sprig" transform="translate(350,38) scale(0.85)" />
+          </g>
+
+          <!-- Lush Twigs & Clusters along Upper Bough -->
+          <use href="#botanical-twig" transform="translate(60,102) rotate(-18) scale(1.25)" />
+          <use href="#botanical-twig" transform="translate(140,68) rotate(-8) scale(1.3)" />
+          <use href="#botanical-twig" transform="translate(230,45) rotate(4) scale(1.15)" />
+          <use href="#botanical-twig" transform="translate(305,36) rotate(12) scale(1.0)" />
+          <use href="#botanical-twig" transform="translate(125,82) rotate(22) scale(1.1)" />
+          <use href="#leaf-cluster" transform="translate(45,110) rotate(25) scale(1.5)" />
+          <use href="#leaf-cluster" transform="translate(120,72) rotate(40) scale(1.6)" />
+          <use href="#leaf-cluster" transform="translate(215,48) rotate(15) scale(1.45)" />
+          <use href="#leaf-cluster" transform="translate(295,38) rotate(55) scale(1.3)" />
+          <use href="#leaf-cluster" transform="translate(370,42) rotate(70) scale(1.1)" />
+        </g>
+
+        <!-- Mid-Upper Bough -->
+        <g class="bough bough-medium" style="transform-origin: 18px 300px;">
+          <path d="M 12,310 C 65,275 125,252 195,245 C 245,240 285,248 320,262" fill="none" stroke="#1a3b2a" stroke-width="6.5" stroke-linecap="round" />
+          <path d="M 95,272 C 140,282 180,302 215,328" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+
+          <!-- Bird Perch Spots on Mid-Upper Bough -->
+          <circle class="perch-spot" data-side="left" cx="165" cy="247" r="1" fill="none" />
+          <circle class="perch-spot" data-side="left" cx="248" cy="243" r="1" fill="none" />
+          
+          <g class="sprig-sway-alt" style="transform-origin: 135px 258px;">
+            <use href="#hanging-sprig" transform="translate(135,258) scale(0.95)" />
+          </g>
+          <g class="sprig-sway" style="transform-origin: 235px 245px;">
+            <use href="#hanging-sprig" transform="translate(235,245) scale(0.85)" />
+          </g>
+
+          <use href="#botanical-twig" transform="translate(45,290) rotate(-14) scale(1.15)" />
+          <use href="#botanical-twig" transform="translate(135,255) rotate(-2) scale(1.1)" />
+          <use href="#botanical-twig" transform="translate(210,245) rotate(10) scale(0.95)" />
+          <use href="#botanical-twig" transform="translate(115,278) rotate(26) scale(0.95)" />
+          <use href="#leaf-cluster" transform="translate(35,295) rotate(20) scale(1.4)" />
+          <use href="#leaf-cluster" transform="translate(115,262) rotate(45) scale(1.35)" />
+          <use href="#leaf-cluster" transform="translate(205,246) rotate(30) scale(1.2)" />
+          <use href="#leaf-cluster" transform="translate(285,254) rotate(65) scale(1.05)" />
+        </g>
+
+        <!-- Mid-Lower Bough -->
+        <g class="bough bough-fast" style="transform-origin: 22px 490px;">
+          <path d="M 18,495 C 58,468 108,452 162,450 C 195,449 222,456 245,468" fill="none" stroke="#1a3b2a" stroke-width="4.8" stroke-linecap="round" />
+          <circle class="perch-spot" data-side="left" cx="155" cy="449" r="1" fill="none" />
+          <circle class="perch-spot" data-side="left" cx="205" cy="453" r="1" fill="none" />
+          <use href="#botanical-twig" transform="translate(38,480) rotate(-10) scale(1.0)" />
+          <use href="#botanical-twig" transform="translate(118,452) rotate(6) scale(0.95)" />
+          <use href="#leaf-cluster" transform="translate(32,482) rotate(35) scale(1.25)" />
+          <use href="#leaf-cluster" transform="translate(110,456) rotate(50) scale(1.2)" />
+          <use href="#leaf-cluster" transform="translate(190,454) rotate(70) scale(1.0)" />
+        </g>
+
+        <!-- Lower Small Sprout & Base Foliage -->
+        <g class="bough bough-medium" style="transform-origin: 24px 665px;">
+          <path d="M 20,670 C 52,650 88,642 125,646" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(28,662) rotate(-6) scale(0.85)" />
+          <use href="#leaf-cluster" transform="translate(30,660) rotate(40) scale(1.1)" />
+        </g>
+
+        <!-- Ground Ferns / Base Leaves -->
+        <g class="base-foliage">
+          <use href="#leaf-cluster" transform="translate(14,874) rotate(35) scale(1.65)" />
+          <use href="#leaf-cluster" transform="translate(46,882) rotate(62) scale(1.35)" />
+          <use href="#botanical-twig" transform="translate(10,878) rotate(-32) scale(1.05)" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- GLIDING BIRD REVEALING A BREEZE-SWEPT TIME GREETING -->
+    <div class="top-feature-breeze-trail" aria-label="Greeting">
+      <svg class="breeze-trail-svg" viewBox="0 0 460 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Revealed Breeze Leaf Trail & Time-Aware Greeting (Zero overlap between vine and text) -->
+        <g class="breeze-reveal-group">
+          <!-- Left Breeze Vine Segment (stops cleanly before greeting text) -->
+          <path class="breeze-stem-path" d="M 38,52 C 74,38 108,38 138,45" stroke="#5b8b5a" stroke-width="1.0" stroke-linecap="round" opacity="0.65" />
+          <!-- Right Breeze Vine Segment (starts cleanly after greeting text) -->
+          <path class="breeze-stem-path" d="M 322,47 C 352,54 386,48 422,36" stroke="#5b8b5a" stroke-width="1.0" stroke-linecap="round" opacity="0.65" />
+
+          <!-- Floating Leaves on Left Vine -->
+          <g class="wake-leaf wake-leaf-1">
+            <use href="#leaf-light" transform="translate(58,46) rotate(68) scale(0.58)" />
+          </g>
+          <g class="wake-leaf wake-leaf-2">
+            <use href="#leaf-soft" transform="translate(92,40) rotate(112) scale(0.62)" />
+          </g>
+          <g class="wake-leaf wake-leaf-3">
+            <use href="#leaf-mid" transform="translate(124,42) rotate(58) scale(0.55)" />
+          </g>
+
+          <!-- Center Breeze-Revealed Greeting in clear open space -->
+          <text id="time-greeting-text" x="230" y="51" text-anchor="middle" class="breeze-welcome-text">Welcome</text>
+
+          <!-- Floating Leaves on Right Vine -->
+          <g class="wake-leaf wake-leaf-4">
+            <use href="#leaf-mid" transform="translate(336,50) rotate(78) scale(0.55)" />
+          </g>
+          <g class="wake-leaf wake-leaf-5">
+            <use href="#leaf-soft" transform="translate(370,49) rotate(118) scale(0.62)" />
+          </g>
+          <g class="wake-leaf wake-leaf-6">
+            <use href="#leaf-light" transform="translate(404,41) rotate(62) scale(0.58)" />
+          </g>
+        </g>
+
+        <!-- Single Gliding Songbird sweeping across the trail -->
+        <g class="gliding-trail-bird">
+          <g transform="scale(0.9)">
+            <!-- Far Wing -->
+            <g class="glide-wing-back" style="transform-origin: -2px -4px;">
+              <path d="M 0,-3 C -5,-16 -16,-20 -20,-8 C -13,-3 -5,0 0,-3 Z" fill="#5b8b5a" />
+            </g>
+            <!-- Forked Tail -->
+            <path d="M -9,-2 L -23,3 L -20,0 L -24,-2 L -10,-5 Z" fill="#7fa471" />
+            <!-- Streamlined Body -->
+            <path d="M -11,-2 C -6,-8 3,-9 8,-4 C 11,-1 7,3 0,2 C -5,2 -9,0 -11,-2 Z" fill="#9bb78b" />
+            <!-- Head & Beak -->
+            <circle cx="6.5" cy="-5.5" r="4.2" fill="#9bb78b" />
+            <path d="M 9.8,-6.2 L 14.5,-4.2 L 9.5,-3.5 Z" fill="#1a3b2a" />
+            <circle cx="7.8" cy="-6.2" r="0.95" fill="#1a3b2a" />
+            <!-- Near Wing -->
+            <g class="glide-wing-front" style="transform-origin: 0px -4px;">
+              <path d="M 2,-3 C -2,-18 -14,-22 -19,-9 C -12,-2 -3,1 2,-3 Z" fill="#7fa471" />
+            </g>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- CENTER HERO SECTION -->
+    <section class="hero">
+      <span class="hero-greeting">Assalamu Alaikum, I'm</span>
+      <h1 class="hero-name">Umme Munia</h1>
+      <h2 class="hero-role">Full-Stack Developer</h2>
+      <p class="hero-bio">
+        I build web applications from the ground up, pairing solid backend architecture with calm, intuitive interfaces.
+      </p>
+      <div class="hero-actions">
+        <a href="#work" class="btn btn-leaf btn-primary">
+          <span class="btn-text">Selected Work</span>
+        </a>
+        <a href="#contact" class="btn btn-leaf btn-secondary">
+          <span class="btn-text">Get in Touch</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SUBTLE SCROLL INDICATOR -->
+    <a href="#about" class="scroll-cue" aria-label="Scroll to About section">
+      <span class="scroll-text">Scroll</span>
+      <span class="scroll-line"></span>
+    </a>
+
+    <!-- RIGHT TREE -->
+    <div class="tree-container tree-right" aria-hidden="true">
+      <svg class="tree-svg" viewBox="0 0 460 900" preserveAspectRatio="xMaxYMax slice">
+        <!-- Mirrored coordinate group so right tree arches inward from right edge -->
+        <g transform="translate(460, 0) scale(-1, 1)">
+          <!-- Soft Ambient Canopy Shapes in Upper Corner -->
+          <g class="canopy-ambient">
+            <ellipse cx="45" cy="90" rx="235" ry="125" fill="#9bb78b" opacity="0.28" />
+            <ellipse cx="155" cy="45" rx="200" ry="95" fill="#7fa471" opacity="0.20" />
+            <ellipse cx="35" cy="260" rx="175" ry="105" fill="#b7c9a4" opacity="0.32" />
+          </g>
+
+          <!-- DISTANT SHORT BACKGROUND TREE (Height reaches just above 3rd branch of main tree, zero overlap with upper canopy shapes) -->
+          <g class="distant-tree" opacity="0.52">
+            <!-- Slender trunk rising from bottom (x=27..33) up to y=418 (just above 3rd branch of main tree) -->
+            <path d="M 33,905 C 35,820 40,715 36,605 C 33,520 28,460 22,420 C 17,460 20,520 22,605 C 25,715 27,820 27,905 Z" fill="#7fa471" opacity="0.65" />
+
+            <!-- Branch Above 3rd Branch of Main Tree (y ~ 428..410, between 2nd and 3rd main branches, below canopy shapes) -->
+            <g class="distant-bough" style="transform-origin: 24px 428px;">
+              <path d="M 22,428 C 68,408 120,400 176,406 C 200,409 220,415 236,424" fill="none" stroke="#7fa471" stroke-width="3.1" stroke-linecap="round" />
+              <use href="#distant-twig" transform="translate(62,410) rotate(-3) scale(0.85)" />
+              <use href="#distant-twig" transform="translate(142,403) rotate(9) scale(0.8)" />
+              <use href="#distant-sprig" transform="translate(122,404) scale(0.74)" />
+            </g>
+
+            <!-- Branch Below 3rd Branch of Main Tree (y ~ 558..535) -->
+            <g class="distant-bough-alt" style="transform-origin: 26px 558px;">
+              <path d="M 24,558 C 70,538 124,530 182,536 C 208,539 228,546 244,555" fill="none" stroke="#7fa471" stroke-width="3.2" stroke-linecap="round" />
+              <use href="#distant-twig" transform="translate(65,540) rotate(-3) scale(0.86)" />
+              <use href="#distant-twig" transform="translate(148,533) rotate(9) scale(0.82)" />
+              <use href="#distant-sprig" transform="translate(128,534) scale(0.75)" />
+            </g>
+
+            <!-- Middle Branch of Short Tree (y ~ 618..598) -->
+            <g class="distant-bough" style="transform-origin: 34px 618px;">
+              <path d="M 32,620 C 74,602 122,596 170,602" fill="none" stroke="#7fa471" stroke-width="2.6" stroke-linecap="round" />
+              <use href="#distant-twig" transform="translate(64,605) rotate(3) scale(0.78)" />
+              <use href="#distant-twig" transform="translate(116,599) rotate(13) scale(0.72)" />
+            </g>
+
+            <!-- Lower Branch of Short Tree (y ~ 770..745) -->
+            <g class="distant-bough-alt" style="transform-origin: 32px 770px;">
+              <path d="M 30,772 C 74,750 126,742 178,748" fill="none" stroke="#7fa471" stroke-width="2.8" stroke-linecap="round" />
+              <use href="#distant-twig" transform="translate(62,754) rotate(-2) scale(0.82)" />
+              <use href="#distant-twig" transform="translate(122,745) rotate(11) scale(0.78)" />
+              <use href="#distant-sprig" transform="translate(106,746) scale(0.7)" />
+            </g>
+          </g>
+
+          <!-- Main Tree Trunk -->
+          <g class="tree-trunk">
+            <path d="M 15,905 C 16,815 26,710 24,585 C 22,445 10,305 6,165 C 4,80 14,25 42,-20 L -35,-20 L -35,905 Z" fill="#1a3b2a" />
+            <path d="M 10,900 C 20,750 28,610 24,460 C 20,340 12,210 10,95" fill="none" stroke="#2e5a34" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+          </g>
+
+          <!-- Upper Canopy Bough -->
+          <g class="bough bough-slow-alt" style="transform-origin: 15px 135px;">
+            <path d="M 8,155 C 62,108 142,68 238,50 C 305,38 358,40 408,54" fill="none" stroke="#1a3b2a" stroke-width="8.5" stroke-linecap="round" />
+            <path d="M 110,90 C 170,80 225,90 278,114" fill="none" stroke="#1a3b2a" stroke-width="4.2" stroke-linecap="round" />
+            <path d="M 195,60 C 250,38 305,22 355,18" fill="none" stroke="#1a3b2a" stroke-width="3.8" stroke-linecap="round" />
+
+            <!-- Bird Perch Spots on Right Upper Bough -->
+            <circle class="perch-spot" data-side="right" cx="170" cy="64" r="1" fill="none" />
+            <circle class="perch-spot" data-side="right" cx="262" cy="44" r="1" fill="none" />
+            <circle class="perch-spot" data-side="right" cx="215" cy="89" r="1" fill="none" />
+
+            <!-- Hanging Sprigs -->
+            <g class="sprig-sway-alt" style="transform-origin: 90px 98px;">
+              <use href="#hanging-sprig" transform="translate(90,98) scale(1.05)" />
+            </g>
+            <g class="sprig-sway" style="transform-origin: 180px 66px;">
+              <use href="#hanging-sprig" transform="translate(180,66) scale(1.18)" />
+            </g>
+            <g class="sprig-sway-alt" style="transform-origin: 268px 48px;">
+              <use href="#hanging-sprig" transform="translate(268,48) scale(0.95)" />
+            </g>
+            <g class="sprig-sway" style="transform-origin: 342px 44px;">
+              <use href="#hanging-sprig" transform="translate(342,44) scale(0.82)" />
+            </g>
+
+            <!-- Lush Twigs & Clusters -->
+            <use href="#botanical-twig" transform="translate(55,115) rotate(-16) scale(1.22)" />
+            <use href="#botanical-twig" transform="translate(135,78) rotate(-6) scale(1.28)" />
+            <use href="#botanical-twig" transform="translate(225,54) rotate(5) scale(1.12)" />
+            <use href="#botanical-twig" transform="translate(298,44) rotate(14) scale(0.98)" />
+            <use href="#botanical-twig" transform="translate(120,94) rotate(24) scale(1.05)" />
+            <use href="#leaf-cluster" transform="translate(42,122) rotate(28) scale(1.5)" />
+            <use href="#leaf-cluster" transform="translate(115,82) rotate(42) scale(1.55)" />
+            <use href="#leaf-cluster" transform="translate(210,56) rotate(18) scale(1.4)" />
+            <use href="#leaf-cluster" transform="translate(288,46) rotate(58) scale(1.25)" />
+            <use href="#leaf-cluster" transform="translate(362,50) rotate(72) scale(1.05)" />
+          </g>
+
+          <!-- Mid-Upper Bough -->
+          <g class="bough bough-medium-alt" style="transform-origin: 18px 330px;">
+            <path d="M 12,335 C 62,298 122,275 188,268 C 238,262 278,270 312,284" fill="none" stroke="#1a3b2a" stroke-width="6.2" stroke-linecap="round" />
+            <path d="M 90,295 C 135,305 175,325 208,348" fill="none" stroke="#1a3b2a" stroke-width="3" stroke-linecap="round" />
+
+            <!-- Bird Perch Spots on Right Mid-Upper Bough -->
+            <circle class="perch-spot" data-side="right" cx="160" cy="270" r="1" fill="none" />
+            <circle class="perch-spot" data-side="right" cx="242" cy="265" r="1" fill="none" />
+
+            <g class="sprig-sway" style="transform-origin: 130px 280px;">
+              <use href="#hanging-sprig" transform="translate(130,280) scale(0.92)" />
+            </g>
+            <g class="sprig-sway-alt" style="transform-origin: 228px 268px;">
+              <use href="#hanging-sprig" transform="translate(228,268) scale(0.82)" />
+            </g>
+
+            <use href="#botanical-twig" transform="translate(42,314) rotate(-12) scale(1.12)" />
+            <use href="#botanical-twig" transform="translate(130,278) rotate(-1) scale(1.08)" />
+            <use href="#botanical-twig" transform="translate(202,268) rotate(11) scale(0.92)" />
+            <use href="#leaf-cluster" transform="translate(34,318) rotate(22) scale(1.38)" />
+            <use href="#leaf-cluster" transform="translate(110,284) rotate(48) scale(1.32)" />
+            <use href="#leaf-cluster" transform="translate(198,270) rotate(32) scale(1.18)" />
+            <use href="#leaf-cluster" transform="translate(278,276) rotate(68) scale(1.0)" />
+          </g>
+
+          <!-- Mid-Lower Bough -->
+          <g class="bough bough-fast-alt" style="transform-origin: 22px 520px;">
+            <path d="M 18,522 C 56,496 104,480 156,478 C 188,477 214,484 236,496" fill="none" stroke="#1a3b2a" stroke-width="4.5" stroke-linecap="round" />
+            <circle class="perch-spot" data-side="right" cx="148" cy="477" r="1" fill="none" />
+            <circle class="perch-spot" data-side="right" cx="195" cy="480" r="1" fill="none" />
+            <use href="#botanical-twig" transform="translate(36,508) rotate(-8) scale(0.98)" />
+            <use href="#botanical-twig" transform="translate(112,480) rotate(8) scale(0.92)" />
+            <use href="#leaf-cluster" transform="translate(30,510) rotate(38) scale(1.22)" />
+            <use href="#leaf-cluster" transform="translate(105,484) rotate(52) scale(1.15)" />
+            <use href="#leaf-cluster" transform="translate(182,482) rotate(72) scale(0.98)" />
+          </g>
+
+          <!-- Lower Sprout -->
+          <g class="bough bough-medium" style="transform-origin: 24px 685px;">
+            <path d="M 20,690 C 50,670 84,662 118,666" fill="none" stroke="#1a3b2a" stroke-width="3" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(26,682) rotate(-5) scale(0.82)" />
+            <use href="#leaf-cluster" transform="translate(28,680) rotate(42) scale(1.08)" />
+          </g>
+
+          <!-- Ground Ferns / Base Leaves -->
+          <g class="base-foliage">
+            <use href="#leaf-cluster" transform="translate(14,874) rotate(35) scale(1.65)" />
+            <use href="#leaf-cluster" transform="translate(46,882) rotate(62) scale(1.35)" />
+            <use href="#botanical-twig" transform="translate(10,878) rotate(-32) scale(1.05)" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       SCROLLABLE PORTFOLIO SECTIONS BELOW HERO
+       ========================================================= -->
+  <div class="page-content">
+    <!-- CONTINUOUS LEFT GROWING VINE RAIL -->
+    <div class="growing-vine-rail growing-vine-left" aria-hidden="true">
+      <svg class="vine-rail-svg" viewBox="0 0 250 4600" preserveAspectRatio="xMinYMin slice">
+        <!-- BACK LAYER: Secondary Misty Behind-Vine (#7fa471, aligned with Hero behind-tree at x=30) -->
+        <path class="vine-grow-path vine-back-stem" d="M 30,-20 L 30,0 C 30,90 28,110 28,180 C 28,260 30,300 30,380 C 30,460 28,500 28,580 C 28,660 30,700 30,780 C 30,860 28,900 28,980 C 28,1060 30,1100 30,1180 C 30,1260 28,1300 28,1380 C 28,1460 30,1500 30,1580 C 30,1660 28,1700 28,1780 C 28,1860 30,1900 30,1980 C 30,2060 28,2100 28,2180 C 28,2260 30,2300 30,2380 C 30,2460 28,2500 28,2580 C 28,2660 30,2700 30,2780 C 30,2860 28,2900 28,2980 C 28,3060 30,3100 30,3180 C 30,3260 28,3300 28,3380 C 28,3460 30,3500 30,3580 C 30,3660 28,3700 28,3780 C 28,3860 30,3900 30,3980 C 30,4060 28,4100 28,4180 C 28,4260 30,4300 30,4380 L 30,4600" fill="none" stroke="#7fa471" stroke-width="3.2" stroke-linecap="round" opacity="0.52" />
+
+        <!-- Misty Behind-Branches (Each anchored directly to the #7fa471 stem at x=30) -->
+        <g class="vine-sprout distant-bough" data-y="380" style="transform-origin: 30px 380px;">
+          <path d="M 29,380 C 68,362 116,355 160,362" fill="none" stroke="#7fa471" stroke-width="2.6" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,365) rotate(-3) scale(0.82)" />
+          <use href="#distant-sprig" transform="translate(110,358) scale(0.72)" />
+        </g>
+        <g class="vine-sprout distant-bough-alt" data-y="780" style="transform-origin: 30px 780px;">
+          <path d="M 29,780 C 68,762 116,756 158,762" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,765) rotate(4) scale(0.8)" />
+        </g>
+        <g class="vine-sprout distant-bough" data-y="1180" style="transform-origin: 30px 1180px;">
+          <path d="M 29,1180 C 68,1162 116,1156 158,1162" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,1165) rotate(-2) scale(0.8)" />
+          <use href="#distant-sprig" transform="translate(108,1158) scale(0.7)" />
+        </g>
+        <g class="vine-sprout distant-bough-alt" data-y="1580" style="transform-origin: 30px 1580px;">
+          <path d="M 29,1580 C 68,1562 114,1556 156,1562" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,1565) rotate(4) scale(0.78)" />
+        </g>
+        <g class="vine-sprout distant-bough" data-y="1980" style="transform-origin: 30px 1980px;">
+          <path d="M 29,1980 C 68,1962 114,1956 156,1962" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,1965) rotate(-2) scale(0.78)" />
+        </g>
+        <g class="vine-sprout distant-bough-alt" data-y="2380" style="transform-origin: 30px 2380px;">
+          <path d="M 29,2380 C 68,2362 114,2356 154,2362" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,2365) rotate(3) scale(0.76)" />
+        </g>
+        <g class="vine-sprout distant-bough" data-y="2780" style="transform-origin: 30px 2780px;">
+          <path d="M 29,2780 C 68,2762 116,2756 158,2762" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,2765) rotate(-2) scale(0.8)" />
+          <use href="#distant-sprig" transform="translate(108,2758) scale(0.7)" />
+        </g>
+        <g class="vine-sprout distant-bough-alt" data-y="3180" style="transform-origin: 30px 3180px;">
+          <path d="M 29,3180 C 68,3162 114,3156 156,3162" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,3165) rotate(4) scale(0.78)" />
+        </g>
+        <g class="vine-sprout distant-bough" data-y="3580" style="transform-origin: 30px 3580px;">
+          <path d="M 29,3580 C 68,3562 116,3556 158,3562" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,3565) rotate(-3) scale(0.8)" />
+          <use href="#distant-sprig" transform="translate(108,3558) scale(0.7)" />
+        </g>
+        <g class="vine-sprout distant-bough-alt" data-y="3980" style="transform-origin: 30px 3980px;">
+          <path d="M 29,3980 C 68,3962 114,3956 156,3962" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,3965) rotate(3) scale(0.78)" />
+        </g>
+        <g class="vine-sprout distant-bough" data-y="4380" style="transform-origin: 30px 4380px;">
+          <path d="M 29,4380 C 68,4362 114,4356 154,4362" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+          <use href="#distant-twig" transform="translate(56,4365) rotate(-2) scale(0.76)" />
+        </g>
+
+        <!-- FRONT LAYER: Primary Foreground Vine Stem (#1a3b2a, aligned with Hero main trunk at x=12) -->
+        <path class="vine-grow-path vine-main-stem" d="M 12,-20 L 12,0 C 12,80 14,110 14,180 C 14,260 10,300 10,380 C 10,460 14,500 14,580 C 14,660 10,700 10,780 C 10,860 14,900 14,980 C 14,1060 10,1100 10,1180 C 10,1260 14,1300 14,1380 C 14,1460 10,1500 10,1580 C 10,1660 14,1700 14,1780 C 14,1860 10,1900 10,1980 C 10,2060 14,2100 14,2180 C 14,2260 10,2300 10,2380 C 10,2460 14,2500 14,2580 C 14,2660 10,2700 10,2780 C 10,2860 14,2900 14,2980 C 14,3060 10,3100 10,3180 C 10,3260 14,3300 14,3380 C 14,3460 10,3500 10,3580 C 10,3660 14,3700 14,3780 C 14,3860 10,3900 10,3980 C 10,4060 14,4100 14,4180 C 14,4260 12,4350 12,4600" fill="none" stroke="#1a3b2a" stroke-width="5.2" stroke-linecap="round" />
+
+        <!-- Primary Foreground Branches (Each anchored directly to the #1a3b2a stem at x=14) -->
+        <g class="vine-sprout bough bough-slow" data-y="180" style="transform-origin: 14px 180px;">
+          <path d="M 13,180 C 56,158 110,148 162,154" fill="none" stroke="#1a3b2a" stroke-width="3.5" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,166) rotate(-8) scale(0.88)" />
+          <use href="#leaf-cluster" transform="translate(20,172) rotate(32) scale(1.1)" />
+          <use href="#hanging-sprig" transform="translate(100,152) scale(0.75)" />
+        </g>
+        <g class="vine-sprout bough bough-medium" data-y="580" style="transform-origin: 14px 580px;">
+          <path d="M 13,580 C 56,558 108,550 156,556" fill="none" stroke="#1a3b2a" stroke-width="3.3" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,566) rotate(-6) scale(0.85)" />
+          <use href="#leaf-cluster" transform="translate(20,572) rotate(38) scale(1.05)" />
+        </g>
+        <g class="vine-sprout bough bough-fast" data-y="980" style="transform-origin: 14px 980px;">
+          <path d="M 13,980 C 56,956 110,946 162,952" fill="none" stroke="#1a3b2a" stroke-width="3.5" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,964) rotate(-8) scale(0.88)" />
+          <use href="#leaf-cluster" transform="translate(20,970) rotate(34) scale(1.08)" />
+          <use href="#hanging-sprig" transform="translate(100,950) scale(0.74)" />
+        </g>
+        <g class="vine-sprout bough bough-slow" data-y="1380" style="transform-origin: 14px 1380px;">
+          <path d="M 13,1380 C 56,1358 108,1350 156,1356" fill="none" stroke="#1a3b2a" stroke-width="3.3" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,1366) rotate(-6) scale(0.85)" />
+          <use href="#leaf-cluster" transform="translate(20,1372) rotate(36) scale(1.05)" />
+        </g>
+        <g class="vine-sprout bough bough-medium" data-y="1780" style="transform-origin: 14px 1780px;">
+          <path d="M 13,1780 C 56,1756 110,1746 160,1752" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,1764) rotate(-8) scale(0.86)" />
+          <use href="#leaf-cluster" transform="translate(20,1770) rotate(32) scale(1.05)" />
+          <use href="#hanging-sprig" transform="translate(100,1750) scale(0.72)" />
+        </g>
+        <g class="vine-sprout bough bough-fast" data-y="2180" style="transform-origin: 14px 2180px;">
+          <path d="M 13,2180 C 54,2158 106,2150 152,2156" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,2166) rotate(-5) scale(0.84)" />
+          <use href="#leaf-cluster" transform="translate(20,2172) rotate(38) scale(1.02)" />
+        </g>
+        <g class="vine-sprout bough bough-slow" data-y="2580" style="transform-origin: 14px 2580px;">
+          <path d="M 13,2580 C 54,2558 106,2550 152,2556" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,2566) rotate(-6) scale(0.84)" />
+          <use href="#leaf-cluster" transform="translate(20,2572) rotate(35) scale(1.02)" />
+        </g>
+        <g class="vine-sprout bough bough-medium" data-y="2980" style="transform-origin: 14px 2980px;">
+          <path d="M 13,2980 C 56,2956 110,2946 160,2952" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,2964) rotate(-8) scale(0.86)" />
+          <use href="#leaf-cluster" transform="translate(20,2970) rotate(32) scale(1.05)" />
+          <use href="#hanging-sprig" transform="translate(100,2950) scale(0.72)" />
+        </g>
+        <g class="vine-sprout bough bough-fast" data-y="3380" style="transform-origin: 14px 3380px;">
+          <path d="M 13,3380 C 54,3358 106,3350 152,3356" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,3366) rotate(-5) scale(0.84)" />
+          <use href="#leaf-cluster" transform="translate(20,3372) rotate(38) scale(1.02)" />
+        </g>
+        <g class="vine-sprout bough bough-slow" data-y="3780" style="transform-origin: 14px 3780px;">
+          <path d="M 13,3780 C 56,3756 110,3746 160,3752" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,3764) rotate(-8) scale(0.86)" />
+          <use href="#leaf-cluster" transform="translate(20,3770) rotate(32) scale(1.05)" />
+          <use href="#hanging-sprig" transform="translate(100,3750) scale(0.72)" />
+        </g>
+        <g class="vine-sprout bough bough-medium" data-y="4180" style="transform-origin: 14px 4180px;">
+          <path d="M 13,4180 C 54,4158 106,4150 152,4156" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+          <use href="#botanical-twig" transform="translate(30,4166) rotate(-6) scale(0.84)" />
+          <use href="#leaf-cluster" transform="translate(20,4172) rotate(35) scale(1.02)" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- CONTINUOUS RIGHT GROWING VINE RAIL -->
+    <div class="growing-vine-rail growing-vine-right" aria-hidden="true">
+      <svg class="vine-rail-svg" viewBox="0 0 250 4600" preserveAspectRatio="xMaxYMin slice">
+        <g transform="translate(250, 0) scale(-1, 1)">
+          <!-- BACK LAYER: Secondary Misty Behind-Vine (#7fa471, aligned with Hero behind-tree at x=30) -->
+          <path class="vine-grow-path vine-back-stem" d="M 30,-20 L 30,0 C 30,90 28,110 28,180 C 28,260 30,300 30,380 C 30,460 28,500 28,580 C 28,660 30,700 30,780 C 30,860 28,900 28,980 C 28,1060 30,1100 30,1180 C 30,1260 28,1300 28,1380 C 28,1460 30,1500 30,1580 C 30,1660 28,1700 28,1780 C 28,1860 30,1900 30,1980 C 30,2060 28,2100 28,2180 C 28,2260 30,2300 30,2380 C 30,2460 28,2500 28,2580 C 28,2660 30,2700 30,2780 C 30,2860 28,2900 28,2980 C 28,3060 30,3100 30,3180 C 30,3260 28,3300 28,3380 C 28,3460 30,3500 30,3580 C 30,3660 28,3700 28,3780 C 28,3860 30,3900 30,3980 C 30,4060 28,4100 28,4180 C 28,4260 30,4300 30,4380 L 30,4600" fill="none" stroke="#7fa471" stroke-width="3.2" stroke-linecap="round" opacity="0.52" />
+
+          <!-- Misty Behind-Branches (Each anchored directly to the #7fa471 stem at x=30) -->
+          <g class="vine-sprout distant-bough-alt" data-y="380" style="transform-origin: 30px 380px;">
+            <path d="M 29,380 C 68,362 116,355 160,362" fill="none" stroke="#7fa471" stroke-width="2.6" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,365) rotate(-3) scale(0.82)" />
+            <use href="#distant-sprig" transform="translate(110,358) scale(0.72)" />
+          </g>
+          <g class="vine-sprout distant-bough" data-y="780" style="transform-origin: 30px 780px;">
+            <path d="M 29,780 C 68,762 116,756 158,762" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,765) rotate(4) scale(0.8)" />
+          </g>
+          <g class="vine-sprout distant-bough-alt" data-y="1180" style="transform-origin: 30px 1180px;">
+            <path d="M 29,1180 C 68,1162 116,1156 158,1162" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,1165) rotate(-2) scale(0.8)" />
+            <use href="#distant-sprig" transform="translate(108,1158) scale(0.7)" />
+          </g>
+          <g class="vine-sprout distant-bough" data-y="1580" style="transform-origin: 30px 1580px;">
+            <path d="M 29,1580 C 68,1562 114,1556 156,1562" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,1565) rotate(4) scale(0.78)" />
+          </g>
+          <g class="vine-sprout distant-bough-alt" data-y="1980" style="transform-origin: 30px 1980px;">
+            <path d="M 29,1980 C 68,1962 114,1956 156,1962" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,1965) rotate(-2) scale(0.78)" />
+          </g>
+          <g class="vine-sprout distant-bough" data-y="2380" style="transform-origin: 30px 2380px;">
+            <path d="M 29,2380 C 68,2362 114,2356 154,2362" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,2365) rotate(3) scale(0.76)" />
+          </g>
+          <g class="vine-sprout distant-bough-alt" data-y="2780" style="transform-origin: 30px 2780px;">
+            <path d="M 29,2780 C 68,2762 116,2756 158,2762" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,2765) rotate(-2) scale(0.8)" />
+            <use href="#distant-sprig" transform="translate(108,2758) scale(0.7)" />
+          </g>
+          <g class="vine-sprout distant-bough" data-y="3180" style="transform-origin: 30px 3180px;">
+            <path d="M 29,3180 C 68,3162 114,3156 156,3162" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,3165) rotate(4) scale(0.78)" />
+          </g>
+          <g class="vine-sprout distant-bough-alt" data-y="3580" style="transform-origin: 30px 3580px;">
+            <path d="M 29,3580 C 68,3562 116,3556 158,3562" fill="none" stroke="#7fa471" stroke-width="2.5" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,3565) rotate(-3) scale(0.8)" />
+            <use href="#distant-sprig" transform="translate(108,3558) scale(0.7)" />
+          </g>
+          <g class="vine-sprout distant-bough" data-y="3980" style="transform-origin: 30px 3980px;">
+            <path d="M 29,3980 C 68,3962 114,3956 156,3962" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,3965) rotate(3) scale(0.78)" />
+          </g>
+          <g class="vine-sprout distant-bough-alt" data-y="4380" style="transform-origin: 30px 4380px;">
+            <path d="M 29,4380 C 68,4362 114,4356 154,4362" fill="none" stroke="#7fa471" stroke-width="2.4" stroke-linecap="round" />
+            <use href="#distant-twig" transform="translate(56,4365) rotate(-2) scale(0.76)" />
+          </g>
+
+          <!-- FRONT LAYER: Primary Foreground Vine Stem (#1a3b2a, aligned with Hero main trunk at x=12) -->
+          <path class="vine-grow-path vine-main-stem" d="M 12,-20 L 12,0 C 12,80 14,110 14,180 C 14,260 10,300 10,380 C 10,460 14,500 14,580 C 14,660 10,700 10,780 C 10,860 14,900 14,980 C 14,1060 10,1100 10,1180 C 10,1260 14,1300 14,1380 C 14,1460 10,1500 10,1580 C 10,1660 14,1700 14,1780 C 14,1860 10,1900 10,1980 C 10,2060 14,2100 14,2180 C 14,2260 10,2300 10,2380 C 10,2460 14,2500 14,2580 C 14,2660 10,2700 10,2780 C 10,2860 14,2900 14,2980 C 14,3060 10,3100 10,3180 C 10,3260 14,3300 14,3380 C 14,3460 10,3500 10,3580 C 10,3660 14,3700 14,3780 C 14,3860 10,3900 10,3980 C 10,4060 14,4100 14,4180 C 14,4260 12,4350 12,4600" fill="none" stroke="#1a3b2a" stroke-width="5.2" stroke-linecap="round" />
+
+          <!-- Primary Foreground Branches (Each anchored directly to the #1a3b2a stem at x=14) -->
+          <g class="vine-sprout bough bough-slow-alt" data-y="180" style="transform-origin: 14px 180px;">
+            <path d="M 13,180 C 56,158 110,148 162,154" fill="none" stroke="#1a3b2a" stroke-width="3.5" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,166) rotate(-8) scale(0.88)" />
+            <use href="#leaf-cluster" transform="translate(20,172) rotate(32) scale(1.1)" />
+            <use href="#hanging-sprig" transform="translate(100,152) scale(0.75)" />
+          </g>
+          <g class="vine-sprout bough bough-medium-alt" data-y="580" style="transform-origin: 14px 580px;">
+            <path d="M 13,580 C 56,558 108,550 156,556" fill="none" stroke="#1a3b2a" stroke-width="3.3" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,566) rotate(-6) scale(0.85)" />
+            <use href="#leaf-cluster" transform="translate(20,572) rotate(38) scale(1.05)" />
+          </g>
+          <g class="vine-sprout bough bough-fast-alt" data-y="980" style="transform-origin: 14px 980px;">
+            <path d="M 13,980 C 56,956 110,946 162,952" fill="none" stroke="#1a3b2a" stroke-width="3.5" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,964) rotate(-8) scale(0.88)" />
+            <use href="#leaf-cluster" transform="translate(20,970) rotate(34) scale(1.08)" />
+            <use href="#hanging-sprig" transform="translate(100,950) scale(0.74)" />
+          </g>
+          <g class="vine-sprout bough bough-slow-alt" data-y="1380" style="transform-origin: 14px 1380px;">
+            <path d="M 13,1380 C 56,1358 108,1350 156,1356" fill="none" stroke="#1a3b2a" stroke-width="3.3" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,1366) rotate(-6) scale(0.85)" />
+            <use href="#leaf-cluster" transform="translate(20,1372) rotate(36) scale(1.05)" />
+          </g>
+          <g class="vine-sprout bough bough-medium-alt" data-y="1780" style="transform-origin: 14px 1780px;">
+            <path d="M 13,1780 C 56,1756 110,1746 160,1752" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,1764) rotate(-8) scale(0.86)" />
+            <use href="#leaf-cluster" transform="translate(20,1770) rotate(32) scale(1.05)" />
+            <use href="#hanging-sprig" transform="translate(100,1750) scale(0.72)" />
+          </g>
+          <g class="vine-sprout bough bough-fast-alt" data-y="2180" style="transform-origin: 14px 2180px;">
+            <path d="M 13,2180 C 54,2158 106,2150 152,2156" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,2166) rotate(-5) scale(0.84)" />
+            <use href="#leaf-cluster" transform="translate(20,2172) rotate(38) scale(1.02)" />
+          </g>
+          <g class="vine-sprout bough bough-slow-alt" data-y="2580" style="transform-origin: 14px 2580px;">
+            <path d="M 13,2580 C 54,2558 106,2550 152,2556" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,2566) rotate(-6) scale(0.84)" />
+            <use href="#leaf-cluster" transform="translate(20,2572) rotate(35) scale(1.02)" />
+          </g>
+          <g class="vine-sprout bough bough-medium-alt" data-y="2980" style="transform-origin: 14px 2980px;">
+            <path d="M 13,2980 C 56,2956 110,2946 160,2952" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,2964) rotate(-8) scale(0.86)" />
+            <use href="#leaf-cluster" transform="translate(20,2970) rotate(32) scale(1.05)" />
+            <use href="#hanging-sprig" transform="translate(100,2950) scale(0.72)" />
+          </g>
+          <g class="vine-sprout bough bough-fast-alt" data-y="3380" style="transform-origin: 14px 3380px;">
+            <path d="M 13,3380 C 54,3358 106,3350 152,3356" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,3366) rotate(-5) scale(0.84)" />
+            <use href="#leaf-cluster" transform="translate(20,3372) rotate(38) scale(1.02)" />
+          </g>
+          <g class="vine-sprout bough bough-slow-alt" data-y="3780" style="transform-origin: 14px 3780px;">
+            <path d="M 13,3780 C 56,3756 110,3746 160,3752" fill="none" stroke="#1a3b2a" stroke-width="3.4" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,3764) rotate(-8) scale(0.86)" />
+            <use href="#leaf-cluster" transform="translate(20,3770) rotate(32) scale(1.05)" />
+            <use href="#hanging-sprig" transform="translate(100,3750) scale(0.72)" />
+          </g>
+          <g class="vine-sprout bough bough-medium-alt" data-y="4180" style="transform-origin: 14px 4180px;">
+            <path d="M 13,4180 C 54,4158 106,4150 152,4156" fill="none" stroke="#1a3b2a" stroke-width="3.2" stroke-linecap="round" />
+            <use href="#botanical-twig" transform="translate(30,4166) rotate(-6) scale(0.84)" />
+            <use href="#leaf-cluster" transform="translate(20,4172) rotate(35) scale(1.02)" />
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 01. ABOUT ME SECTION -->
+    <section id="about" class="portfolio-section">
+      <div class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <span class="section-index">01 · About Me</span>
+          <h2 class="section-title">Rooted in Code &amp; Calm Design</h2>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-story">
+            <p>
+              I'm <strong>Umme Munia</strong>, a full-stack developer who enjoys building web applications from start to finish. Just like a healthy tree needs both deep, unseen roots and an open canopy in the light, I believe great software needs reliable backend structure paired with a clean, welcoming interface.
+            </p>
+            <p>
+              Whether I'm designing database schemas, writing API endpoints, or fine-tuning animations in the browser, I care about writing maintainable code that solves real problems without unnecessary complexity.
+            </p>
+            <p>
+              When I step away from my keyboard, I find my best inspiration around trees, green leaves, and quiet outdoor spaces.
+            </p>
+          </div>
+
+          <div class="about-pillars">
+            <article class="pillar-card">
+              <div class="pillar-header">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#2e5a34" />
+                </svg>
+                <h3>Backend Architecture</h3>
+              </div>
+              <p>Designing structured databases, clean REST APIs, authentication flows, and scalable server logic.</p>
+            </article>
+
+            <article class="pillar-card">
+              <div class="pillar-header">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#3e6c41" />
+                </svg>
+                <h3>Frontend Craft</h3>
+              </div>
+              <p>Translating ideas into responsive, accessible, and fast interfaces that feel natural to use.</p>
+            </article>
+
+            <article class="pillar-card">
+              <div class="pillar-header">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#5b8b5a" />
+                </svg>
+                <h3>End-to-End Ownership</h3>
+              </div>
+              <p>Taking features from an initial sketch and database model all the way to deployment.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02. TECH STACK & SKILLS SECTION -->
+    <section id="skills" class="portfolio-section">
+      <div class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <span class="section-index">02 · Tech Stack &amp; Skills</span>
+          <h2 class="section-title">Tools I Build With</h2>
+        </div>
+
+        <div class="skills-grid">
+          <!-- Frontend -->
+          <div class="skill-group-card">
+            <span class="skill-group-label">Canopy · Interface</span>
+            <h3 class="skill-group-title">Frontend Development</h3>
+            <p class="skill-group-desc">Building responsive, interactive user interfaces with clean component architecture.</p>
+            <div class="skill-tags">
+              <span class="leaf-tag">JavaScript (ES6+)</span>
+              <span class="leaf-tag">TypeScript</span>
+              <span class="leaf-tag">React.js</span>
+              <span class="leaf-tag">Next.js</span>
+              <span class="leaf-tag">HTML5 &amp; CSS3</span>
+              <span class="leaf-tag">Tailwind CSS</span>
+              <span class="leaf-tag">Redux / Zustand</span>
+            </div>
+          </div>
+
+          <!-- Backend -->
+          <div class="skill-group-card">
+            <span class="skill-group-label">Trunk · Core Logic</span>
+            <h3 class="skill-group-title">Backend &amp; APIs</h3>
+            <p class="skill-group-desc">Creating reliable server-side applications, secure authentication, and fast APIs.</p>
+            <div class="skill-tags">
+              <span class="leaf-tag">Node.js</span>
+              <span class="leaf-tag">Express.js</span>
+              <span class="leaf-tag">Python</span>
+              <span class="leaf-tag">RESTful APIs</span>
+              <span class="leaf-tag">JWT &amp; OAuth</span>
+              <span class="leaf-tag">WebSockets</span>
+              <span class="leaf-tag">API Integration</span>
+            </div>
+          </div>
+
+          <!-- Database & Tools -->
+          <div class="skill-group-card">
+            <span class="skill-group-label">Roots · Data &amp; Workflow</span>
+            <h3 class="skill-group-title">Databases &amp; Tools</h3>
+            <p class="skill-group-desc">Structuring data models, version control, testing, and modern deployment workflows.</p>
+            <div class="skill-tags">
+              <span class="leaf-tag">PostgreSQL</span>
+              <span class="leaf-tag">MongoDB</span>
+              <span class="leaf-tag">MySQL</span>
+              <span class="leaf-tag">Prisma / Mongoose</span>
+              <span class="leaf-tag">Git &amp; GitHub</span>
+              <span class="leaf-tag">Docker</span>
+              <span class="leaf-tag">Linux / CLI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03. SELECTED WORK / PROJECTS SECTION -->
+    <section id="work" class="portfolio-section">
+      <div class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <span class="section-index">03 · Selected Work</span>
+          <h2 class="section-title">Featured Projects</h2>
+        </div>
+
+        <div class="projects-list">
+          <!-- Project 01 -->
+          <article class="project-card">
+            <div class="project-meta">
+              <span class="project-num">01</span>
+              <span class="project-type">Full-Stack Web Application</span>
+            </div>
+            <h3 class="project-title">Verdant Workspace — Collaborative Task &amp; Notes Platform</h3>
+            <p class="project-description">
+              A calm, distraction-free workspace for teams to organize projects, write markdown notes, and track progress in real time with role-based permissions.
+            </p>
+            <div class="project-tech">
+              <span class="leaf-tag leaf-tag-sm">Next.js</span>
+              <span class="leaf-tag leaf-tag-sm">TypeScript</span>
+              <span class="leaf-tag leaf-tag-sm">Node.js</span>
+              <span class="leaf-tag leaf-tag-sm">PostgreSQL</span>
+              <span class="leaf-tag leaf-tag-sm">Prisma</span>
+            </div>
+            <div class="project-links">
+              <a href="#work" class="btn btn-leaf btn-primary btn-sm">
+                <span class="btn-text">Live Demo</span>
+              </a>
+              <a href="#work" class="btn btn-leaf btn-secondary btn-sm">
+                <span class="btn-text">Source Code</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Project 02 -->
+          <article class="project-card">
+            <div class="project-meta">
+              <span class="project-num">02</span>
+              <span class="project-type">E-Commerce &amp; Inventory System</span>
+            </div>
+            <h3 class="project-title">Botanica Market — Plant &amp; Eco-Goods Storefront</h3>
+            <p class="project-description">
+              An end-to-end e-commerce platform featuring dynamic product filtering, cart persistence, secure checkout, and an admin dashboard for managing inventory and orders.
+            </p>
+            <div class="project-tech">
+              <span class="leaf-tag leaf-tag-sm">React</span>
+              <span class="leaf-tag leaf-tag-sm">Express.js</span>
+              <span class="leaf-tag leaf-tag-sm">MongoDB</span>
+              <span class="leaf-tag leaf-tag-sm">REST API</span>
+              <span class="leaf-tag leaf-tag-sm">Tailwind CSS</span>
+            </div>
+            <div class="project-links">
+              <a href="#work" class="btn btn-leaf btn-primary btn-sm">
+                <span class="btn-text">Live Demo</span>
+              </a>
+              <a href="#work" class="btn btn-leaf btn-secondary btn-sm">
+                <span class="btn-text">Source Code</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Project 03 -->
+          <article class="project-card">
+            <div class="project-meta">
+              <span class="project-num">03</span>
+              <span class="project-type">Developer Tool &amp; Analytics</span>
+            </div>
+            <h3 class="project-title">Canopy Pulse — API Uptime &amp; Performance Monitor</h3>
+            <p class="project-description">
+              A lightweight monitoring dashboard that tracks endpoint response times, logs status history, and sends instant alerts when services experience downtime.
+            </p>
+            <div class="project-tech">
+              <span class="leaf-tag leaf-tag-sm">Node.js</span>
+              <span class="leaf-tag leaf-tag-sm">React</span>
+              <span class="leaf-tag leaf-tag-sm">WebSockets</span>
+              <span class="leaf-tag leaf-tag-sm">PostgreSQL</span>
+              <span class="leaf-tag leaf-tag-sm">Docker</span>
+            </div>
+            <div class="project-links">
+              <a href="#work" class="btn btn-leaf btn-primary btn-sm">
+                <span class="btn-text">Live Demo</span>
+              </a>
+              <a href="#work" class="btn btn-leaf btn-secondary btn-sm">
+                <span class="btn-text">Source Code</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04. EXPERIENCE & EDUCATION TIMELINE -->
+    <section id="experience" class="portfolio-section">
+      <div class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <span class="section-index">04 · Journey</span>
+          <h2 class="section-title">Experience &amp; Education</h2>
+        </div>
+
+        <div class="stem-timeline">
+          <!-- Timeline Item 1 -->
+          <div class="timeline-item">
+            <div class="timeline-node" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#2e5a34" />
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <span class="timeline-period">Present</span>
+              <h3 class="timeline-role">Full-Stack Web Developer</h3>
+              <span class="timeline-org">Independent &amp; Collaborative Projects</span>
+              <p>
+                Architecting and building full-stack web applications, designing RESTful APIs, managing relational and document databases, and crafting responsive React/Next.js frontends.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 2 -->
+          <div class="timeline-item">
+            <div class="timeline-node" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#3e6c41" />
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <span class="timeline-period">Academic Foundation</span>
+              <h3 class="timeline-role">Computer Science &amp; Software Engineering</h3>
+              <span class="timeline-org">University Studies &amp; Core CS</span>
+              <p>
+                Focused on data structures, algorithms, object-oriented programming, database management systems, computer networks, and software engineering principles.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 3 -->
+          <div class="timeline-item">
+            <div class="timeline-node" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M12 2C7.5 7.5 6 14 12 22C18 14 16.5 7.5 12 2Z" fill="#5b8b5a" />
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <span class="timeline-period">Continuous Growth</span>
+              <h3 class="timeline-role">Problem Solving &amp; Open Source</h3>
+              <span class="timeline-org">Community &amp; Self-Directed Learning</span>
+              <p>
+                Continuously sharpening algorithmic problem-solving skills, exploring modern web tooling, and building clean projects from scratch.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05. CONTACT SECTION -->
+    <section id="contact" class="portfolio-section contact-section">
+      <div class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <span class="section-index">05 · Contact</span>
+          <h2 class="section-title">Let's Grow Something Together</h2>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-info">
+            <p class="contact-lead">
+              Whether you have a full-stack role in mind, a project to collaborate on, or simply want to say salam, my inbox is always open.
+            </p>
+            <div class="contact-links">
+              <a href="mailto:ummemunia@example.com" class="leaf-tag contact-pill">Email · ummemunia@example.com</a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="leaf-tag contact-pill">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="leaf-tag contact-pill">LinkedIn</a>
+            </div>
+          </div>
+
+          <form class="contact-form" onsubmit="event.preventDefault(); this.reset(); alert('Thank you for reaching out! Your message has been noted.');">
+            <div class="form-field">
+              <label for="visitor-name">Your Name</label>
+              <input type="text" id="visitor-name" name="name" placeholder="Enter your name" required />
+            </div>
+            <div class="form-field">
+              <label for="visitor-email">Your Email</label>
+              <input type="email" id="visitor-email" name="email" placeholder="Enter your email" required />
+            </div>
+            <div class="form-field">
+              <label for="visitor-message">Message</label>
+              <textarea id="visitor-message" name="message" rows="4" placeholder="Tell me about your project or opportunity..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-leaf btn-primary">
+              <span class="btn-text">Send Message</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p class="footer-credit">Designed &amp; Built from Scratch by <strong>Umme Munia</strong></p>
+        <a href="#" class="back-to-top">Back to Top ↑</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
