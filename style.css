@@ -285,7 +285,7 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
-  width: clamp(300px, 36vw, 420px);
+  width: clamp(280px, 36vw, 420px);
   pointer-events: none;
   user-select: none;
 }
@@ -300,10 +300,10 @@ html, body {
 .breeze-welcome-text {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 23px;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 500;
   letter-spacing: 0.08em;
-  fill: #2e5a34;
+  fill: var(--green-950);
 }
 
 .breeze-reveal-group {
@@ -1348,64 +1348,36 @@ html, body {
     padding: clamp(3.2rem, 7vw, 4.5rem) 1rem;
   }
 
-  /* Side trees stay softly framed at the edges without intruding on hero text */
+  /* 1. TRULY RESPONSIVE SIDE TREES (delicately framing the edges, zero center blockage) */
   .tree-container {
-    width: clamp(75px, 18vw, 120px);
-    opacity: 0.52;
+    width: clamp(55px, 15vw, 85px);
+    opacity: 0.65;
+    overflow: hidden;
   }
 
-  /* Hide weeping willow sprigs that droop down into the hero text on mobile */
+  /* Hide the heavy upper arching bough and drooping willow sprigs on mobile so top sky is completely clear for the greeting */
+  .tree-container .bough-slow,
+  .tree-container .bough-slow-alt,
+  .tree-container .canopy-ambient,
   .tree-container .sprig-sway,
-  .tree-container .sprig-sway-alt {
-    display: none;
-  }
-
-  /* Scale and fade all boughs so they stay delicately framing the outer edges without tangling */
-  .tree-left .bough-slow,
-  .tree-left .bough-slow-alt {
-    scale: 0.30;
-    opacity: 0.65;
-    transform-origin: 15px 120px;
-  }
-
-  .tree-right .bough-slow,
-  .tree-right .bough-slow-alt {
-    scale: 0.30;
-    opacity: 0.65;
-    transform-origin: 15px 135px;
-  }
-
-  .tree-left .bough-medium,
-  .tree-left .bough-medium-alt {
-    scale: 0.26;
-    opacity: 0.18;
-    transform-origin: 18px 300px;
-  }
-
-  .tree-right .bough-medium,
-  .tree-right .bough-medium-alt {
-    scale: 0.26;
-    opacity: 0.18;
-    transform-origin: 18px 325px;
-  }
-
-  .tree-left .bough-fast,
-  .tree-left .bough-fast-alt {
-    scale: 0.26;
-    opacity: 0.18;
-    transform-origin: 20px 490px;
-  }
-
-  .tree-right .bough-fast,
-  .tree-right .bough-fast-alt {
-    scale: 0.26;
-    opacity: 0.18;
-    transform-origin: 20px 520px;
-  }
-
+  .tree-container .sprig-sway-alt,
   .tree-container .distant-bough,
   .tree-container .distant-bough-alt {
     display: none;
+  }
+
+  /* Side boughs stay delicate, soft, and strictly within the outer edge column */
+  .tree-left .bough-medium,
+  .tree-left .bough-medium-alt,
+  .tree-right .bough-medium,
+  .tree-right .bough-medium-alt,
+  .tree-left .bough-fast,
+  .tree-left .bough-fast-alt,
+  .tree-right .bough-fast,
+  .tree-right .bough-fast-alt {
+    scale: 0.22;
+    opacity: 0.45;
+    transform-origin: 18px 300px;
   }
 
   /* Vine rails softly decorate edges without crowding section cards */
@@ -1419,20 +1391,65 @@ html, body {
     display: none;
   }
 
-  /* Hero stack and buttons */
+  /* 2. COMPACT CANVAS & OPEN TIME GREETING */
+  .canvas {
+    padding: clamp(0.75rem, 2vh, 1.25rem) 0.85rem clamp(2.4rem, 4.5vh, 3.2rem);
+  }
+
+  .top-feature-breeze-trail {
+    top: clamp(1.4rem, 3.5vh, 2.4rem);
+    width: min(320px, 88vw);
+    z-index: 20;
+  }
+
+  .breeze-welcome-text {
+    font-size: 26px;
+    font-weight: 500;
+    fill: var(--green-950);
+  }
+
+  /* 3. COMPACT HERO SECTION */
   .hero {
-    border-radius: 32px;
-    padding: 1.6rem 1.2rem;
+    max-width: min(350px, 90vw);
+    padding: 1.35rem 1.15rem;
+    border-radius: 28px;
+    box-shadow: 0 0 24px 12px var(--green-100);
+  }
+
+  .hero-greeting {
+    font-size: 1.05rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .hero-name {
+    font-size: clamp(2.2rem, 6.5vw, 2.7rem);
+    line-height: 1.05;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-role {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-bio {
+    font-size: 0.86rem;
+    line-height: 1.55;
+    margin-bottom: 1.25rem;
+    max-width: 38ch;
   }
 
   .hero-actions {
     flex-direction: column;
     width: 100%;
-    max-width: 290px;
-    gap: 0.85rem;
+    max-width: 270px;
+    gap: 0.65rem;
   }
 
   .hero-actions .btn {
+    padding: 0.72rem 1.5rem;
+    font-size: 0.74rem;
     width: 100%;
     text-align: center;
   }
@@ -1469,16 +1486,16 @@ html, body {
 
   /* Sound toggle & scroll cue safely raised above bottom edge with zero clipping */
   .sound-toggle {
-    bottom: clamp(1.8rem, 3.8vh, 2.5rem);
-    right: clamp(0.85rem, 2.5vw, 1.4rem);
-    padding: 0.52rem 0.92rem;
-    font-size: 0.66rem;
+    bottom: clamp(1.4rem, 2.8vh, 1.9rem);
+    right: clamp(0.75rem, 2.5vw, 1.25rem);
+    padding: 0.46rem 0.82rem;
+    font-size: 0.64rem;
     gap: 0.42rem;
   }
 
   .scroll-cue {
     left: 50%;
-    bottom: clamp(1.8rem, 3.8vh, 2.5rem);
+    bottom: clamp(1.4rem, 2.8vh, 1.9rem);
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
