@@ -40,13 +40,15 @@ html, body {
 
 .canvas {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   background-color: transparent;
+  padding: clamp(1rem, 3vh, 2.5rem) 1rem;
 }
 
 /* =========================================
@@ -56,8 +58,8 @@ html, body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: clamp(220px, 34vw, 480px);
-  height: 100vh;
+  width: clamp(160px, 32vw, 480px);
+  height: 100%;
   pointer-events: none;
   z-index: 2;
   transform-origin: bottom center;
@@ -394,18 +396,19 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 560px;
-  padding: 2rem;
+  width: 100%;
+  max-width: min(560px, 92vw);
+  padding: clamp(1.4rem, 4vw, 2.3rem) clamp(1.1rem, 3.5vw, 2.2rem);
   background-color: var(--green-100);
-  box-shadow: 0 0 36px 24px var(--green-100);
-  border-radius: 48px;
+  box-shadow: 0 0 clamp(20px, 4vw, 36px) clamp(12px, 3vw, 24px) var(--green-100);
+  border-radius: clamp(26px, 5vw, 48px);
   animation: fadeIn 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .hero-greeting {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
   font-weight: 400;
   color: var(--green-600);
   margin-bottom: 0.15rem;
@@ -413,19 +416,20 @@ html, body {
 
 .hero-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3.2rem, 7vw, 5.4rem);
+  font-size: clamp(2.4rem, 6.8vw, 5.4rem);
   font-weight: 400;
   letter-spacing: 0.01em;
-  line-height: 1.04;
+  line-height: 1.05;
   color: var(--green-950);
   margin-bottom: 0.55rem;
+  word-break: break-word;
 }
 
 .hero-role {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+  font-size: clamp(0.72rem, 1.3vw, 0.95rem);
   font-weight: 500;
-  letter-spacing: 0.26em;
+  letter-spacing: clamp(0.14em, 0.28vw, 0.26em);
   text-transform: uppercase;
   color: var(--green-700);
   margin-bottom: 1.35rem;
@@ -433,18 +437,18 @@ html, body {
 
 .hero-bio {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(0.95rem, 1.45vw, 1.08rem);
+  font-size: clamp(0.88rem, 1.35vw, 1.08rem);
   font-weight: 300;
-  line-height: 1.7;
+  line-height: 1.68;
   color: var(--green-800);
-  max-width: 44ch;
-  margin-bottom: 2rem;
+  max-width: min(44ch, 100%);
+  margin-bottom: clamp(1.4rem, 3vh, 2rem);
 }
 
 .hero-actions {
   display: flex;
   align-items: center;
-  gap: 1.4rem;
+  gap: clamp(0.75rem, 2vw, 1.4rem);
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -455,12 +459,12 @@ html, body {
   align-items: center;
   justify-content: center;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.82rem;
+  font-size: clamp(0.74rem, 1.1vw, 0.82rem);
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
-  padding: 0.95rem 2.15rem;
+  padding: clamp(0.78rem, 1.8vw, 0.95rem) clamp(1.4rem, 3.5vw, 2.15rem);
   /* Organic Botanical Leaf Shape: rounded belly, pointed base (bottom-left) & pointed tip (top-right) */
   border-radius: 38px 4px 38px 4px;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -607,12 +611,13 @@ html, body {
 
 .portfolio-section {
   position: relative;
-  padding: clamp(5rem, 10vw, 8.5rem) 1.5rem;
+  padding: clamp(3.8rem, 8vw, 8rem) clamp(1rem, 3vw, 1.5rem);
   overflow: hidden;
 }
 
 .section-container {
   max-width: 1020px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -635,7 +640,7 @@ html, body {
   position: absolute;
   top: -6px;
   bottom: 0;
-  width: clamp(120px, 18.48vw, 261px);
+  width: clamp(38px, 16vw, 240px);
   pointer-events: none;
   z-index: 1;
   transform-origin: top center;
@@ -713,8 +718,9 @@ html, body {
 
 /* Section Headers */
 .section-header {
-  margin-bottom: 3.2rem;
+  margin-bottom: clamp(1.8rem, 4vw, 3.2rem);
   display: inline-block;
+  max-width: 100%;
   background-color: var(--green-100);
   box-shadow: 0 0 24px 16px var(--green-100);
   border-radius: 24px;
@@ -723,9 +729,9 @@ html, body {
 .section-index {
   display: inline-block;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.76rem;
+  font-size: clamp(0.7rem, 1.2vw, 0.76rem);
   font-weight: 500;
-  letter-spacing: 0.28em;
+  letter-spacing: clamp(0.18em, 0.3vw, 0.28em);
   text-transform: uppercase;
   color: var(--green-600);
   margin-bottom: 0.55rem;
@@ -733,10 +739,11 @@ html, body {
 
 .section-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.2rem, 4.5vw, 3.3rem);
+  font-size: clamp(1.85rem, 4.5vw, 3.3rem);
   font-weight: 400;
   color: var(--green-950);
   line-height: 1.12;
+  word-break: break-word;
 }
 
 /* 01. About Section */
@@ -896,16 +903,16 @@ html, body {
 /* 03. Selected Projects */
 .projects-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1.2rem, 2.5vw, 1.8rem);
 }
 
 .project-card {
   background-color: var(--green-200);
   background-color: color-mix(in srgb, var(--green-200) 44%, var(--green-100));
   border: 1px solid var(--green-400);
-  border-radius: 32px 6px 32px 6px;
-  padding: 2.1rem 1.85rem;
+  border-radius: clamp(22px, 3.8vw, 32px) 6px clamp(22px, 3.8vw, 32px) 6px;
+  padding: clamp(1.4rem, 3.2vw, 2.1rem) clamp(1.2rem, 2.8vw, 1.85rem);
   display: flex;
   flex-direction: column;
   transition: transform 0.35s ease, background-color 0.35s ease;
@@ -940,16 +947,17 @@ html, body {
 
 .project-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.65rem;
+  font-size: clamp(1.35rem, 2.8vw, 1.65rem);
   font-weight: 500;
   line-height: 1.25;
   color: var(--green-950);
   margin-bottom: 0.85rem;
+  word-break: break-word;
 }
 
 .project-description {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.92rem;
+  font-size: clamp(0.88rem, 1.3vw, 0.92rem);
   font-weight: 300;
   line-height: 1.68;
   color: var(--green-800);
@@ -979,12 +987,12 @@ html, body {
 /* 04. Experience & Education Growing Stem Timeline */
 .stem-timeline {
   position: relative;
-  padding-left: 2.4rem;
+  padding-left: clamp(1.5rem, 3.5vw, 2.4rem);
   border-left: 1.5px solid var(--green-400);
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
-  margin-left: 0.75rem;
+  gap: clamp(1.6rem, 3vw, 2.4rem);
+  margin-left: clamp(0.25rem, 1vw, 0.75rem);
 }
 
 .timeline-item {
@@ -993,7 +1001,7 @@ html, body {
 
 .timeline-node {
   position: absolute;
-  left: -3.05rem;
+  left: calc(-1 * clamp(1.5rem, 3.5vw, 2.4rem) - 11px);
   top: 0.15rem;
   width: 22px;
   height: 22px;
@@ -1009,8 +1017,8 @@ html, body {
   background-color: var(--green-200);
   background-color: color-mix(in srgb, var(--green-200) 42%, var(--green-100));
   border: 1px solid var(--green-400);
-  border-radius: 26px 4px 26px 4px;
-  padding: 1.6rem 1.85rem;
+  border-radius: clamp(20px, 3.5vw, 26px) 4px clamp(20px, 3.5vw, 26px) 4px;
+  padding: clamp(1.2rem, 3vw, 1.6rem) clamp(1.1rem, 2.8vw, 1.85rem);
 }
 
 .timeline-period {
@@ -1087,8 +1095,8 @@ html, body {
   background-color: var(--green-200);
   background-color: color-mix(in srgb, var(--green-200) 45%, var(--green-100));
   border: 1px solid var(--green-400);
-  border-radius: 32px 6px 32px 6px;
-  padding: 2.2rem 2rem;
+  border-radius: clamp(22px, 3.8vw, 32px) 6px clamp(22px, 3.8vw, 32px) 6px;
+  padding: clamp(1.4rem, 3.2vw, 2.2rem) clamp(1.15rem, 2.8vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -1272,28 +1280,279 @@ html, body {
   }
 }
 
-/* Responsive adjustment for smaller screens */
-@media (max-width: 860px) {
-  .about-grid,
-  .skills-grid,
-  .contact-grid {
-    grid-template-columns: 1fr;
+/* =========================================
+   RESPONSIVE DESIGN & COMPREHENSIVE MEDIA QUERIES
+   ========================================= */
+
+/* Desktop & Large Tablets (<= 1120px) */
+@media (max-width: 1120px) {
+  .section-container {
+    padding: 0 1rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
   }
 
   .tree-container {
-    width: 42vw;
-    opacity: 0.88;
+    width: clamp(140px, 24vw, 320px);
+    opacity: 0.85;
   }
 
-  .section-branch {
-    opacity: 0.4;
-    width: 120px;
+  .growing-vine-rail {
+    width: clamp(55px, 12vw, 150px);
+  }
+}
+
+/* Tablets (<= 860px) */
+@media (max-width: 860px) {
+  .about-grid,
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
+  }
+
+  .portfolio-section {
+    padding: clamp(3.8rem, 8vw, 6.5rem) 1.25rem;
+  }
+
+  .tree-container {
+    width: clamp(100px, 20vw, 180px);
+    opacity: 0.65;
+  }
+
+  .growing-vine-rail {
+    width: clamp(45px, 9vw, 90px);
+    opacity: 0.48;
+  }
+
+  .section-header {
+    margin-bottom: 2.2rem;
+  }
+}
+
+/* Mobile Devices (<= 640px) */
+@media (max-width: 640px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .projects-list {
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
+  }
+
+  .portfolio-section {
+    padding: clamp(3.2rem, 7vw, 4.5rem) 1rem;
+  }
+
+  /* Side trees stay softly framed at the edges without intruding on hero text */
+  .tree-container {
+    width: clamp(75px, 18vw, 120px);
+    opacity: 0.42;
+  }
+
+  .tree-container .distant-bough,
+  .tree-container .distant-bough-alt {
+    display: none;
+  }
+
+  /* Vine rails softly decorate edges without crowding section cards */
+  .growing-vine-rail {
+    width: clamp(32px, 8vw, 52px);
+    opacity: 0.36;
+  }
+
+  .growing-vine-rail .distant-bough,
+  .growing-vine-rail .distant-bough-alt {
+    display: none;
+  }
+
+  /* Hero stack and buttons */
+  .hero {
+    border-radius: 32px;
+    padding: 1.6rem 1.2rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 290px;
+    gap: 0.85rem;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Stem timeline compact spacing */
+  .stem-timeline {
+    padding-left: 1.4rem;
+    margin-left: 0.25rem;
+    gap: 1.6rem;
+  }
+
+  .timeline-node {
+    left: -1.95rem;
+    width: 18px;
+    height: 18px;
+    top: 0.25rem;
+  }
+
+  .timeline-content {
+    padding: 1.15rem 1.15rem;
+    border-radius: 18px 4px 18px 4px;
+  }
+
+  .timeline-role {
+    font-size: clamp(1.2rem, 3.2vw, 1.4rem);
+  }
+
+  /* Footer responsive stack */
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.85rem;
+  }
+
+  /* Sound toggle & scroll cue non-overlapping corner positioning */
+  .sound-toggle {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.58rem 1rem;
+    font-size: 0.68rem;
+    gap: 0.45rem;
+  }
+
+  .scroll-cue {
+    left: 1.2rem;
+    bottom: 1.1rem;
+    transform: none;
+    align-items: flex-start;
+  }
+
+  .scroll-line {
+    height: 20px;
+  }
+
+  .contact-links {
+    width: 100%;
+  }
+
+  .contact-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .contact-form {
+    padding: 1.5rem 1.2rem;
+    border-radius: 22px 4px 22px 4px;
+  }
+
+  .contact-form .btn {
+    width: 100%;
+  }
+}
+
+/* Smallest Phones (<= 380px) */
+@media (max-width: 380px) {
+  .hero {
+    padding: 1.35rem 0.95rem;
+    border-radius: 24px;
+  }
+
+  .hero-greeting {
+    font-size: 1.15rem;
+  }
+
+  .hero-name {
+    font-size: 2.3rem;
+  }
+
+  .hero-role {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+
+  .hero-bio {
+    font-size: 0.88rem;
+  }
+
+  .btn {
+    padding: 0.78rem 1.4rem;
+    font-size: 0.76rem;
+  }
+
+  .tree-container {
+    width: 65px;
+    opacity: 0.35;
+  }
+
+  .growing-vine-rail {
+    width: 26px;
+    opacity: 0.3;
+  }
+
+  .project-card,
+  .skill-group-card,
+  .timeline-content {
+    padding: 1.25rem 1rem;
   }
 
   .sound-toggle {
-    bottom: 1.2rem;
-    right: 1.2rem;
-    padding: 0.58rem 1rem;
-    font-size: 0.68rem;
+    padding: 0.5rem 0.82rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* Mobile Landscape & Short Screens (max-height <= 640px) */
+@media (max-height: 640px) {
+  .canvas {
+    min-height: auto;
+    padding-top: clamp(1.8rem, 4vh, 2.8rem);
+    padding-bottom: clamp(3rem, 6vh, 4rem);
+  }
+
+  .hero {
+    padding: 1.15rem 1.4rem;
+  }
+
+  .hero-name {
+    font-size: clamp(2rem, 5.2vw, 3.2rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .hero-role {
+    margin-bottom: 0.65rem;
+  }
+
+  .hero-bio {
+    margin-bottom: 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .hero-actions {
+    flex-direction: row;
+    gap: 0.85rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1.4rem;
+    font-size: 0.75rem;
+  }
+
+  .scroll-cue {
+    display: none;
+  }
+
+  .sound-toggle {
+    bottom: 0.85rem;
+    right: 0.85rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.66rem;
   }
 }
