@@ -48,7 +48,7 @@ html, body {
   position: relative;
   overflow: hidden;
   background-color: transparent;
-  padding: clamp(1rem, 3vh, 2.5rem) 1rem;
+  padding: clamp(1rem, 3vh, 2.5rem) 1rem clamp(3.2rem, 6vh, 4.5rem);
 }
 
 /* =========================================
@@ -1351,7 +1351,56 @@ html, body {
   /* Side trees stay softly framed at the edges without intruding on hero text */
   .tree-container {
     width: clamp(75px, 18vw, 120px);
-    opacity: 0.42;
+    opacity: 0.52;
+  }
+
+  /* Hide weeping willow sprigs that droop down into the hero text on mobile */
+  .tree-container .sprig-sway,
+  .tree-container .sprig-sway-alt {
+    display: none;
+  }
+
+  /* Scale and fade all boughs so they stay delicately framing the outer edges without tangling */
+  .tree-left .bough-slow,
+  .tree-left .bough-slow-alt {
+    scale: 0.30;
+    opacity: 0.65;
+    transform-origin: 15px 120px;
+  }
+
+  .tree-right .bough-slow,
+  .tree-right .bough-slow-alt {
+    scale: 0.30;
+    opacity: 0.65;
+    transform-origin: 15px 135px;
+  }
+
+  .tree-left .bough-medium,
+  .tree-left .bough-medium-alt {
+    scale: 0.26;
+    opacity: 0.18;
+    transform-origin: 18px 300px;
+  }
+
+  .tree-right .bough-medium,
+  .tree-right .bough-medium-alt {
+    scale: 0.26;
+    opacity: 0.18;
+    transform-origin: 18px 325px;
+  }
+
+  .tree-left .bough-fast,
+  .tree-left .bough-fast-alt {
+    scale: 0.26;
+    opacity: 0.18;
+    transform-origin: 20px 490px;
+  }
+
+  .tree-right .bough-fast,
+  .tree-right .bough-fast-alt {
+    scale: 0.26;
+    opacity: 0.18;
+    transform-origin: 20px 520px;
   }
 
   .tree-container .distant-bough,
@@ -1418,24 +1467,31 @@ html, body {
     gap: 0.85rem;
   }
 
-  /* Sound toggle & scroll cue non-overlapping corner positioning */
+  /* Sound toggle & scroll cue safely raised above bottom edge with zero clipping */
   .sound-toggle {
-    bottom: 1rem;
-    right: 1rem;
-    padding: 0.58rem 1rem;
-    font-size: 0.68rem;
-    gap: 0.45rem;
+    bottom: clamp(1.8rem, 3.8vh, 2.5rem);
+    right: clamp(0.85rem, 2.5vw, 1.4rem);
+    padding: 0.52rem 0.92rem;
+    font-size: 0.66rem;
+    gap: 0.42rem;
   }
 
   .scroll-cue {
-    left: 1.2rem;
-    bottom: 1.1rem;
-    transform: none;
-    align-items: flex-start;
+    left: 50%;
+    bottom: clamp(1.8rem, 3.8vh, 2.5rem);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .scroll-text {
+    font-size: 0.65rem;
   }
 
   .scroll-line {
-    height: 20px;
+    height: 18px;
   }
 
   .contact-links {
@@ -1503,8 +1559,14 @@ html, body {
   }
 
   .sound-toggle {
-    padding: 0.5rem 0.82rem;
-    font-size: 0.65rem;
+    bottom: 1.6rem;
+    right: 0.75rem;
+    padding: 0.48rem 0.82rem;
+    font-size: 0.64rem;
+  }
+
+  .scroll-cue {
+    bottom: 1.6rem;
   }
 }
 
