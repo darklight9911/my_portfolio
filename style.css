@@ -306,12 +306,21 @@ html, body {
   fill: var(--green-950);
 }
 
+.greeting-bg-pill {
+  display: none;
+  fill: var(--green-100);
+  stroke: var(--green-300);
+  stroke-width: 1px;
+}
+
 .breeze-reveal-group {
   animation: trailRevealCycle 9s ease-in-out infinite;
+  animation-delay: -3.5s;
 }
 
 .gliding-trail-bird {
   animation: birdSweepAcross 9s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+  animation-delay: -3.5s;
 }
 
 .glide-wing-front {
@@ -1348,36 +1357,195 @@ html, body {
     padding: clamp(3.2rem, 7vw, 4.5rem) 1rem;
   }
 
-  /* 1. TRULY RESPONSIVE SIDE TREES (delicately framing the edges, zero center blockage) */
+  /* 1. TRULY RESPONSIVE SIDE TREES WITH SCALED BOUGHS & LEAVES */
   .tree-container {
-    width: clamp(55px, 15vw, 85px);
-    opacity: 0.65;
-    overflow: hidden;
+    width: clamp(100px, 32vw, 160px);
+    opacity: 0.92;
+    overflow: visible;
   }
 
-  /* Hide the heavy upper arching bough and drooping willow sprigs on mobile so top sky is completely clear for the greeting */
-  .tree-container .bough-slow,
-  .tree-container .bough-slow-alt,
-  .tree-container .canopy-ambient,
-  .tree-container .sprig-sway,
-  .tree-container .sprig-sway-alt,
+  /* Responsive Mobile Sway Keyframes that include proportional scaling */
+  @keyframes windSwayPrimaryMobile {
+    0% {
+      transform: scale(0.40) rotate(-1.2deg) skewX(-0.5deg);
+    }
+    45% {
+      transform: scale(0.40) rotate(2.4deg) skewX(1.2deg);
+    }
+    75% {
+      transform: scale(0.40) rotate(1.1deg) skewX(0.4deg);
+    }
+    100% {
+      transform: scale(0.40) rotate(3.4deg) skewX(1.6deg);
+    }
+  }
+
+  @keyframes windSwayPrimaryAltMobile {
+    0% {
+      transform: scale(0.40) rotate(1.8deg) skewX(0.8deg);
+    }
+    40% {
+      transform: scale(0.40) rotate(-1.5deg) skewX(-0.6deg);
+    }
+    70% {
+      transform: scale(0.40) rotate(-0.4deg) skewX(-0.2deg);
+    }
+    100% {
+      transform: scale(0.40) rotate(-2.8deg) skewX(-1.3deg);
+    }
+  }
+
+  @keyframes windSwayMediumMobile {
+    0% {
+      transform: scale(0.30) rotate(-1.6deg);
+    }
+    50% {
+      transform: scale(0.30) rotate(2.8deg);
+    }
+    100% {
+      transform: scale(0.30) rotate(4.2deg);
+    }
+  }
+
+  @keyframes windSwayMediumAltMobile {
+    0% {
+      transform: scale(0.30) rotate(2.2deg);
+    }
+    50% {
+      transform: scale(0.30) rotate(-1.8deg);
+    }
+    100% {
+      transform: scale(0.30) rotate(-3.5deg);
+    }
+  }
+
+  @keyframes windSwayFastMobile {
+    0% {
+      transform: scale(0.28) rotate(-2deg);
+    }
+    60% {
+      transform: scale(0.28) rotate(3.5deg);
+    }
+    100% {
+      transform: scale(0.28) rotate(1.5deg);
+    }
+  }
+
+  @keyframes windSwayFastAltMobile {
+    0% {
+      transform: scale(0.28) rotate(2.4deg);
+    }
+    60% {
+      transform: scale(0.28) rotate(-3.2deg);
+    }
+    100% {
+      transform: scale(0.28) rotate(-1.2deg);
+    }
+  }
+
+  @keyframes sprigFlutterMobile {
+    0% {
+      transform: scale(0.52) rotate(-4deg);
+    }
+    50% {
+      transform: scale(0.52) rotate(6.5deg);
+    }
+    100% {
+      transform: scale(0.52) rotate(10.5deg);
+    }
+  }
+
+  @keyframes sprigFlutterAltMobile {
+    0% {
+      transform: scale(0.52) rotate(5deg);
+    }
+    45% {
+      transform: scale(0.52) rotate(-4.5deg);
+    }
+    100% {
+      transform: scale(0.52) rotate(8.5deg);
+    }
+  }
+
+  @keyframes canopyBreatheMobile {
+    0% {
+      transform: scale(0.45) translate(0, 0);
+    }
+    100% {
+      transform: scale(0.45) translate(4px, 3px);
+    }
+  }
+
+  /* Restore all tree branches, leaves, and canopy with responsive animations */
+  .tree-container .bough-slow {
+    display: block;
+    animation-name: windSwayPrimaryMobile;
+    opacity: 0.92;
+  }
+
+  .tree-container .bough-slow-alt {
+    display: block;
+    animation-name: windSwayPrimaryAltMobile;
+    opacity: 0.92;
+  }
+
+  .tree-left .bough-slow,
+  .tree-left .bough-slow-alt {
+    transform-origin: 15px 120px;
+  }
+
+  .tree-right .bough-slow,
+  .tree-right .bough-slow-alt {
+    transform-origin: 15px 135px;
+  }
+
+  /* Willow sprigs scaled down with responsive animations */
+  .tree-container .sprig-sway {
+    display: block;
+    animation-name: sprigFlutterMobile;
+    opacity: 0.88;
+  }
+
+  .tree-container .sprig-sway-alt {
+    display: block;
+    animation-name: sprigFlutterAltMobile;
+    opacity: 0.88;
+  }
+
+  /* Ambient canopy & distant boughs softly scaled */
+  .tree-container .canopy-ambient {
+    display: block;
+    animation-name: canopyBreatheMobile;
+    opacity: 0.38;
+    transform-origin: 20px 100px;
+  }
+
   .tree-container .distant-bough,
   .tree-container .distant-bough-alt {
-    display: none;
+    display: block;
+    transform: scale(0.32);
+    opacity: 0.35;
   }
 
-  /* Side boughs stay delicate, soft, and strictly within the outer edge column */
-  .tree-left .bough-medium,
-  .tree-left .bough-medium-alt,
-  .tree-right .bough-medium,
-  .tree-right .bough-medium-alt,
-  .tree-left .bough-fast,
-  .tree-left .bough-fast-alt,
-  .tree-right .bough-fast,
-  .tree-right .bough-fast-alt {
-    scale: 0.22;
-    opacity: 0.45;
-    transform-origin: 18px 300px;
+  /* Side boughs stay delicate, soft, and proportioned */
+  .tree-container .bough-medium {
+    animation-name: windSwayMediumMobile;
+    opacity: 0.70;
+  }
+
+  .tree-container .bough-medium-alt {
+    animation-name: windSwayMediumAltMobile;
+    opacity: 0.70;
+  }
+
+  .tree-container .bough-fast {
+    animation-name: windSwayFastMobile;
+    opacity: 0.60;
+  }
+
+  .tree-container .bough-fast-alt {
+    animation-name: windSwayFastAltMobile;
+    opacity: 0.60;
   }
 
   /* Vine rails softly decorate edges without crowding section cards */
@@ -1397,21 +1565,28 @@ html, body {
   }
 
   .top-feature-breeze-trail {
-    top: clamp(1.4rem, 3.5vh, 2.4rem);
-    width: min(320px, 88vw);
+    top: clamp(1.0rem, 2.4vh, 1.8rem);
+    width: min(300px, 84vw);
     z-index: 20;
   }
 
+  .greeting-bg-pill {
+    display: block;
+    opacity: 0.90;
+  }
+
   .breeze-welcome-text {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 500;
     fill: var(--green-950);
+    filter: drop-shadow(0 0 8px var(--green-100));
   }
 
   /* 3. COMPACT HERO SECTION */
   .hero {
     max-width: min(350px, 90vw);
-    padding: 1.35rem 1.15rem;
+    padding: 1.25rem 1.15rem;
+    margin-top: clamp(1.2rem, 3vh, 2.2rem);
     border-radius: 28px;
     box-shadow: 0 0 24px 12px var(--green-100);
   }
